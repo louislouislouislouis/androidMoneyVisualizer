@@ -101,6 +101,7 @@ private fun getAccessToken(
             val access_tokenValue = response.get("access_token") as String
             //update the view
             access_token.value = access_tokenValue
+            Log.d("ACCESS_VAL", access_tokenValue)
         },
         Response.ErrorListener { error ->
             // TODO: Handle error
