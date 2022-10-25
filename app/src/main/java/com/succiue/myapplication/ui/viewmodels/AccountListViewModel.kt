@@ -11,31 +11,30 @@ import com.succiue.myapplication.data.model.Account
 
 class AccountListViewModel() : ViewModel() {
 
-    private val account:Account = Account()
-
+    private val account: Account = Account()
     val publicToken = mutableStateOf("")
     val accessToken = mutableStateOf("")
     val linkToken = mutableStateOf("")
-    var dummyContext:Context? = null
+    var dummyContext: Context? = null
 
     var linkAccountToPlaid: ActivityResultLauncher<LinkTokenConfiguration>? = null
 
-    fun onSuccess(res: LinkSuccess){
+    fun onSuccess(res: LinkSuccess) {
         // Send public_token to your server, exchange for access_token
         var publicTokenValue = res.publicToken
         publicToken.value = publicTokenValue
 
         dummyContext?.let {
-            account?.getAccessToken(it,accessToken,publicTokenValue)
+            account?.getAccessToken(it, accessToken, publicTokenValue)
         }
     }
+
     //user intent
-    fun linkAccount(ctx:Context)
-    {
+    fun linkAccount(ctx: Context) {
 
         dummyContext = ctx
         if (linkAccountToPlaid != null) {
-            Log.d("TEST","fre")
+            Log.d("TEST", "fre")
             account?.getPublicToken(
                 ctx = ctx,
                 linkAccountToPlaid = linkAccountToPlaid!!,
@@ -43,7 +42,6 @@ class AccountListViewModel() : ViewModel() {
             )
         }
     }
-
 
 
 }

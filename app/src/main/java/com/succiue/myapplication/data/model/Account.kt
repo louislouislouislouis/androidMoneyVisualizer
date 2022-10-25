@@ -10,7 +10,6 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.plaid.link.configuration.LinkTokenConfiguration
 import com.plaid.link.linkTokenConfiguration
-import com.plaid.link.result.LinkSuccess
 import org.json.JSONObject
 
 class Account {
@@ -23,7 +22,7 @@ class Account {
         linkToken: MutableState<String>,
         linkAccountToPlaid: ActivityResultLauncher<LinkTokenConfiguration>
     ) {
-        Log.d("TEST","fzrgerzgre")
+        Log.d("TEST", "fzrgerzgre")
 
         // in the below line, we are creating a variable for url.
         var url = "https://bankbackuqac.herokuapp.com/bank/getLink"
