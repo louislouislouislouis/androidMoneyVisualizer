@@ -8,12 +8,12 @@ import androidx.compose.ui.res.stringResource
 import com.succiue.myapplication.R
 import com.succiue.myapplication.ui.fragment.CustomButtom
 import com.succiue.myapplication.ui.fragment.valueToken
-import com.succiue.myapplication.ui.viewmodels.AccountListViewModel
+import com.succiue.myapplication.ui.viewmodels.MainViewController
 
 
 //@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun MoneyVizualizerHome(viewModel: AccountListViewModel) {
+fun MoneyVizualizerHome(viewModel: MainViewController) {
     val ctx = LocalContext.current
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

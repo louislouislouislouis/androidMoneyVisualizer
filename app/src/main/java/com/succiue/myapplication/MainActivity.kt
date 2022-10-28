@@ -12,15 +12,20 @@ import androidx.compose.ui.Modifier
 import com.plaid.link.OpenPlaidLink
 import com.plaid.link.result.LinkExit
 import com.plaid.link.result.LinkSuccess
+import com.succiue.myapplication.data.model.User
 import com.succiue.myapplication.ui.screens.MoneyVizualizerHome
 import com.succiue.myapplication.ui.theme.MyApplicationTheme
-import com.succiue.myapplication.ui.viewmodels.AccountListViewModel
+import com.succiue.myapplication.ui.viewmodels.MainViewController
+import com.succiue.myapplication.utils.getSerializable
 
 
 class MainActivity : ComponentActivity() {
+    private lateinit var user: User
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var viewModel = AccountListViewModel()
+        user = intent.getSerializable("user", User::class.java)
+        Log.d("MAINACTIVITY", user.toString())
+        var viewModel = MainViewController()
         val linkAccountToPlaid =
             registerForActivityResult(OpenPlaidLink()) {
                 when (it) {
@@ -47,4 +52,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-

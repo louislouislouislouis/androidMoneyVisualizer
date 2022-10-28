@@ -11,7 +11,8 @@ import com.plaid.link.result.LinkSuccess
 import com.succiue.myapplication.LoginActivity
 import com.succiue.myapplication.data.model.Account
 
-class AccountListViewModel() : ViewModel() {
+
+class MainViewController() : ViewModel() {
 
     private val account: Account = Account()
     val publicToken = mutableStateOf("")

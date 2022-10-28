@@ -48,6 +48,7 @@ android {
 }
 
 dependencies {
+    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
     def lifecycle_version = "2.5.1"
 
     implementation 'androidx.core:core-ktx:1.7.0'
@@ -65,6 +66,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
     implementation "com.plaid.link:sdk-core:3.10.1"
     implementation("com.android.volley:volley:1.2.1")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
 
     implementation platform('com.google.firebase:firebase-bom:31.0.1')
 
