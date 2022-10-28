@@ -1,12 +1,14 @@
 package com.succiue.myapplication.ui.viewmodels
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.plaid.link.configuration.LinkTokenConfiguration
 import com.plaid.link.result.LinkSuccess
+import com.succiue.myapplication.LoginActivity
 import com.succiue.myapplication.data.model.Account
 
 class AccountListViewModel() : ViewModel() {
@@ -16,6 +18,7 @@ class AccountListViewModel() : ViewModel() {
     val accessToken = mutableStateOf("")
     val linkToken = mutableStateOf("")
     var dummyContext: Context? = null
+
 
     var linkAccountToPlaid: ActivityResultLauncher<LinkTokenConfiguration>? = null
 
@@ -41,6 +44,13 @@ class AccountListViewModel() : ViewModel() {
                 linkToken = linkToken
             )
         }
+    }
+
+    fun connectToGoogle(ctx: Context) {
+        Log.d("TEST", "Try connect")
+        val intent = Intent(ctx, LoginActivity::class.java)
+        ctx.startActivity(intent)
+        Log.d("TEST", "Try connect")
     }
 
 

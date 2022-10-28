@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "473823468553",
+    "project_id": "kichtavizualizer",
+    "storage_bucket": "kichtavizualizer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:473823468553:android:255a83d9d72620b20eecd8",
+        "android_client_info": {
+          "package_name": "com.succiue.myapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "473823468553-7anjh2veve8ltt14au1eerkpalrqicc0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.succiue.myapplication",
+            "certificate_hash": "aacc0b2e4071097c4efe79b23a0090fcfd1cb458"
+          }
+        },
+        {
+          "client_id": "473823468553-12tebj7jftchaasckr19oveqd8fsos1o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDO91owRHWvY4YtCp6dYW76LOYBMNGd7Mw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "473823468553-12tebj7jftchaasckr19oveqd8fsos1o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
