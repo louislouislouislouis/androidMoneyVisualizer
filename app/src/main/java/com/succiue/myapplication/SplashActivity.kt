@@ -18,6 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SplashActivity : ComponentActivity() {
+
     /**
      * Minimum Time in microseconds where the SplashScreen as to be shown
      */

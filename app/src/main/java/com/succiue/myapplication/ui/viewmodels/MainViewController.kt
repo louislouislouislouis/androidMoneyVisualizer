@@ -10,11 +10,13 @@ import com.plaid.link.configuration.LinkTokenConfiguration
 import com.plaid.link.result.LinkSuccess
 import com.succiue.myapplication.LoginActivity
 import com.succiue.myapplication.data.model.Account
+import com.succiue.myapplication.data.model.User
 
 
-class MainViewController() : ViewModel() {
+class MainViewController(var user: User) : ViewModel() {
 
-    private val account: Account = Account()
+
+    private val account: Account = Account(user)
     val publicToken = mutableStateOf("")
     val accessToken = mutableStateOf("")
     val linkToken = mutableStateOf("")
@@ -48,10 +50,8 @@ class MainViewController() : ViewModel() {
     }
 
     fun connectToGoogle(ctx: Context) {
-        Log.d("TEST", "Try connect")
         val intent = Intent(ctx, LoginActivity::class.java)
         ctx.startActivity(intent)
-        Log.d("TEST", "Try connect")
     }
 
 

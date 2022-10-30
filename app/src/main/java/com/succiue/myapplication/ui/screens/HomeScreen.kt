@@ -1,6 +1,7 @@
 package com.succiue.myapplication.ui.screens
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
@@ -18,6 +19,7 @@ fun MoneyVizualizerHome(viewModel: MainViewController) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Text("Hello" + viewModel.user.displayName)
         valueToken(
             text1 = viewModel.linkToken.value,
             text2 = viewModel.publicToken.value,

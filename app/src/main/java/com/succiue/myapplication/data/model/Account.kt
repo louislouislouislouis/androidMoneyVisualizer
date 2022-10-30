@@ -12,9 +12,9 @@ import com.plaid.link.configuration.LinkTokenConfiguration
 import com.plaid.link.linkTokenConfiguration
 import org.json.JSONObject
 
-class Account {
+
+class Account(var owner: User) {
     var id: String = ""
-    var owner: String = ""
 
 
     fun getPublicToken(
@@ -31,9 +31,11 @@ class Account {
         val queue = Volley.newRequestQueue(ctx)
 
         // making a string request to update our data and
-        val jsonObjectRequest = JsonObjectRequest(Request.Method.POST, url, null,
+        val jsonObjectRequest = object : JsonObjectRequest(
+            Request.Method.POST,
+            url,
+            null,
             Response.Listener { response ->
-
                 val tokenLink = response.get("tokenLink") as String
                 //update the view
                 linkToken.value = tokenLink
@@ -47,7 +49,15 @@ class Account {
             Response.ErrorListener { error ->
                 // TODO: Handle error
             }
-        )
+        ) {
+            override fun getHeaders(): MutableMap<String, String> {
+                val headers = HashMap<String, String>()
+                //headers.put("Content-Type", "application/json");
+                headers["Authorization"] = "Bearer " + owner.idToken
+
+                return headers
+            }
+        }
         // below line is to make
         // a json object request.
         queue.add(jsonObjectRequest)
@@ -69,7 +79,7 @@ class Account {
         jsonParams.put("publicToken", publicToken)
 
         // making a string request to update our data and
-        val jsonObjectRequest = JsonObjectRequest(
+        val jsonObjectRequest = object : JsonObjectRequest(
             Request.Method.POST, url, jsonParams,
             Response.Listener { response ->
 
@@ -81,7 +91,15 @@ class Account {
             Response.ErrorListener { error ->
                 // TODO: Handle error
             }
-        )
+        ) {
+            override fun getHeaders(): MutableMap<String, String> {
+                val headers = HashMap<String, String>()
+                //headers.put("Content-Type", "application/json");
+                headers["Authorization"] = "Bearer " + owner.idToken
+
+                return headers
+            }
+        }
         // below line is to make
         // a json object request.
         queue.add(jsonObjectRequest)

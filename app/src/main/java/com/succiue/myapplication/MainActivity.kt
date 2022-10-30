@@ -20,12 +20,20 @@ import com.succiue.myapplication.utils.getSerializable
 
 
 class MainActivity : ComponentActivity() {
+    /**
+     * Current User Connected.
+     * This has to be in the parameter of the intent
+     */
     private lateinit var user: User
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Get user variable
         user = intent.getSerializable("user", User::class.java)
-        Log.d("MAINACTIVITY", user.toString())
-        var viewModel = MainViewController()
+        var viewModel = MainViewController(user)
+        Log.d("USER", user.toString())
+        // Create an ActivityLauncher for connect Account and give it to controller
         val linkAccountToPlaid =
             registerForActivityResult(OpenPlaidLink()) {
                 when (it) {
@@ -33,12 +41,12 @@ class MainActivity : ComponentActivity() {
                     is LinkExit -> Log.d(
                         "ConnectPlaid",
                         "Error Connecting To Bank Api"
-                    ) /* handle LinkExit */
+                    )
                 }
             }
         viewModel.linkAccountToPlaid = linkAccountToPlaid
 
-
+        // TODO: Change the look
         setContent {
             MyApplicationTheme {
                 // A surface container using the 'background' color from the theme
