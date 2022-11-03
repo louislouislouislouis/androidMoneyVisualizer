@@ -16,20 +16,37 @@ import com.succiue.myapplication.ui.viewmodels.MainViewController
 @Composable
 fun MoneyVizualizerHome(viewModel: MainViewController) {
     val ctx = LocalContext.current
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text("Hello" + viewModel.user.displayName)
-        valueToken(
-            text1 = viewModel.linkToken.value,
-            text2 = viewModel.publicToken.value,
-            text3 = viewModel.accessToken.value
-        )
-        CustomButtom(stringResource(R.string.welcoming_user)) {
-            viewModel.linkAccount(ctx)
+    if (viewModel.isLoading.value) {
+        Text(text = "LOADING")
+    } else {
+        if (viewModel.needAnAccess.value) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text("Hello" + viewModel.user.displayName)
+                Text(text = "U DO NOT HAVE AN ACCOUNT TO THE BANK! FUCK")
+                valueToken(
+                    text1 = viewModel.linkToken.value,
+                    text2 = viewModel.publicToken.value,
+                    text3 = viewModel.accessToken.value
+                )
+                CustomButtom(stringResource(R.string.welcoming_user)) {
+                    viewModel.linkAccount(ctx)
+                }
+                CustomButtom(stringResource(R.string.connectToGoogle)) {
+                    viewModel.connectToGoogle(ctx)
+                }
+            }
+        } else {
+            Column() {
+                Text(text = "U ALREADY HAVE AN ACCOUNT TO THE BANK! AMAZING")
+                CustomButtom(stringResource(R.string.connectToGoogle)) {
+                    viewModel.connectToGoogle(ctx)
+                }
+            }
+
         }
-        CustomButtom(stringResource(R.string.connectToGoogle)) {
-            viewModel.connectToGoogle(ctx)
-        }
+
     }
+
 }

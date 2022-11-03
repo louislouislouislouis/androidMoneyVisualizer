@@ -29,10 +29,14 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         // Get user variable
         user = intent.getSerializable("user", User::class.java)
+
+        //Create VM with user
         var viewModel = MainViewController(user)
         Log.d("USER", user.toString())
+
         // Create an ActivityLauncher for connect Account and give it to controller
         val linkAccountToPlaid =
             registerForActivityResult(OpenPlaidLink()) {
@@ -44,7 +48,10 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
+
+        // Activate good
         viewModel.linkAccountToPlaid = linkAccountToPlaid
+        peekAvailableContext()?.let { viewModel.getAccessToken(it) }
 
         // TODO: Change the look
         setContent {

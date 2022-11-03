@@ -10,6 +10,9 @@ class User(
 ) : Serializable {
     //TODO: Get
     val accounts = mutableListOf<Account>()
+    fun verifyAccount() {
+
+    }
 
     override fun toString(): String {
         return "I am the MF Class User with: $id $displayName $email $idToken"

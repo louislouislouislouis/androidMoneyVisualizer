@@ -11,10 +11,13 @@ import com.plaid.link.result.LinkSuccess
 import com.succiue.myapplication.LoginActivity
 import com.succiue.myapplication.data.model.Account
 import com.succiue.myapplication.data.model.User
+import com.succiue.myapplication.utils.sendRequest
 
 
 class MainViewController(var user: User) : ViewModel() {
 
+    var isLoading = mutableStateOf<Boolean>(true)
+    var needAnAccess = mutableStateOf<Boolean>(true)
 
     private val account: Account = Account(user)
     val publicToken = mutableStateOf("")
@@ -47,6 +50,31 @@ class MainViewController(var user: User) : ViewModel() {
                 linkToken = linkToken
             )
         }
+    }
+
+    fun getAccessToken(ctx: Context) {
+        isLoading.value = true;
+        sendRequest(
+            ctx,
+            "https://bankbackuqac.herokuapp.com/bank/getAccessToken",
+            com.android.volley.Request.Method.POST,
+            onSuccess = { response ->
+                val accessToken: String
+                try {
+                    accessToken = response.get("accessToken") as String
+                    Log.d("ACCOUNT", accessToken)
+                    needAnAccess.value = false
+                } catch (e: Exception) {
+                    needAnAccess.value = true
+                }
+                isLoading.value = false;
+            },
+            onFailure = { error ->
+                Log.d("ACCOUNT", error.localizedMessage)
+                isLoading.value = false;
+            },
+            owner = user
+        )
     }
 
     fun connectToGoogle(ctx: Context) {

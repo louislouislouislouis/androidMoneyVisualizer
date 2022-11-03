@@ -1,7 +1,14 @@
 package com.succiue.myapplication.utils
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
+import com.succiue.myapplication.data.model.User
+import org.json.JSONObject
 import java.io.Serializable
 
 
@@ -27,4 +34,41 @@ inline fun <T1 : Any, T2 : Any, T3 : Any, T4 : Any, R : Any> multipleNonNull(
         p3,
         p4
     ) else null
+}
+
+
+fun sendRequest(
+    ctx: Context,
+    url: String,
+    method: Int = Request.Method.GET,
+    onSuccess: Response.Listener<org.json.JSONObject>,
+    onFailure: Response.ErrorListener,
+    owner: User,
+    body: JSONObject? = null,
+) {
+    // in the below line, we are creating a variable for url.
+    //var url = "https://bankbackuqac.herokuapp.com/bank/getLink"
+
+    // creating a new variable for our request queue
+    val queue = Volley.newRequestQueue(ctx)
+
+    // making a string request to update our data and
+    val jsonObjectRequest = object : JsonObjectRequest(
+        method,
+        url,
+        body,
+        onSuccess,
+        onFailure
+    ) {
+        override fun getHeaders(): MutableMap<String, String> {
+            val headers = HashMap<String, String>()
+            //headers.put("Content-Type", "application/json");
+            headers["Authorization"] = "Bearer " + owner.idToken
+
+            return headers
+        }
+    }
+    // below line is to make
+    // a json object request.
+    queue.add(jsonObjectRequest)
 }
