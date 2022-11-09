@@ -8,11 +8,14 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.Modifier
 import com.plaid.link.OpenPlaidLink
 import com.plaid.link.result.LinkExit
 import com.plaid.link.result.LinkSuccess
 import com.succiue.myapplication.data.model.User
+import com.succiue.myapplication.ui.screens.AppScreen
 import com.succiue.myapplication.ui.screens.MoneyVizualizerHome
 import com.succiue.myapplication.ui.theme.MyApplicationTheme
 import com.succiue.myapplication.ui.viewmodels.MainViewController
@@ -24,10 +27,10 @@ class MainActivity : ComponentActivity() {
      * Current User Connected.
      * This has to be in the parameter of the intent
      */
-    private lateinit var user: User
+    //private lateinit var user: User
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    /*override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Get user variable
@@ -61,9 +64,24 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background,
                 ) {
-                    MoneyVizualizerHome(viewModel)
+                    //MoneyVizualizerHome(viewModel)
+                    AppScreen()
                 }
             }
         }
+    }*/
+
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContent {
+            MyApplicationTheme {
+                //val windowSize = calculateWindowSizeClass(activity = this)
+                AppScreen()
+            }
+        }
     }
+
+
 }
