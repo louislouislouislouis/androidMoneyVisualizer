@@ -5,12 +5,11 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.navigation.NavHostController
 import com.succiue.myapplication.ui.viewmodels.LoginViewModel
 
-
-//@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun LoginHome(viewModel: LoginViewModel) {
+fun ProfileBody(navController: NavHostController, viewModel: LoginViewModel) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -28,4 +27,5 @@ fun LoginHome(viewModel: LoginViewModel) {
         }
 
     }
+
 }

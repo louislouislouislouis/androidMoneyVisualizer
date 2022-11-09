@@ -1,52 +1,342 @@
 package com.succiue.myapplication.ui.screens
 
-import androidx.compose.foundation.layout.Column
+import androidx.annotation.StringRes
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.succiue.myapplication.R
-import com.succiue.myapplication.ui.fragment.CustomButtom
-import com.succiue.myapplication.ui.fragment.valueToken
+import com.succiue.myapplication.ui.viewmodels.LoginViewModel
 import com.succiue.myapplication.ui.viewmodels.MainViewController
 
+sealed class Screen(
+    val route: String,
+    @StringRes val resourceId: Int,
+    val icon: ImageVector,
 
-//@Preview(showBackground = true, showSystemUi = true)
+    ) {
+    object Home : Screen("home", R.string.home, Icons.Filled.Home)
+    object Stats : Screen("stats", R.string.stats, Icons.Filled.PlayArrow)
+    object Goals : Screen("goals", R.string.goals, Icons.Filled.Star)
+    object Profile : Screen("profile", R.string.profile, Icons.Default.Face)
+}
+
+val MainScreens = listOf(
+    Screen.Home,
+    Screen.Stats,
+    Screen.Goals,
+    Screen.Profile,
+)
+
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MoneyVizualizerHome(viewModel: MainViewController) {
-    val ctx = LocalContext.current
+fun MoneyVisualizerHome(
+    viewModel: MainViewController,
+    loginViewModel: LoginViewModel,
+    windowsSize: WindowSizeClass,
+    modifier: Modifier = Modifier
+) {
+    val navController = rememberNavController()
     if (viewModel.isLoading.value) {
         Text(text = "LOADING")
     } else {
         if (viewModel.needAnAccess.value) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text("Hello" + viewModel.user.displayName)
-                Text(text = "U DO NOT HAVE AN ACCOUNT TO THE BANK! FUCK")
-                valueToken(
-                    text1 = viewModel.linkToken.value,
-                    text2 = viewModel.publicToken.value,
-                    text3 = viewModel.accessToken.value
-                )
-                CustomButtom(stringResource(R.string.welcoming_user)) {
-                    viewModel.linkAccount(ctx)
-                }
-                CustomButtom(stringResource(R.string.connectToGoogle)) {
-                    viewModel.connectToGoogle(ctx)
-                }
-            }
+            NoAccountBody(viewModel)
         } else {
-            Column() {
-                Text(text = "U ALREADY HAVE AN ACCOUNT TO THE BANK! AMAZING")
-                CustomButtom(stringResource(R.string.connectToGoogle)) {
-                    viewModel.connectToGoogle(ctx)
+            when (windowsSize.widthSizeClass) {
+                WindowWidthSizeClass.Compact -> {
+                    AppCompactWidthNavigation(
+                        modifier,
+                        navController = navController,
+                        viewModel = viewModel,
+                        loginViewModel = loginViewModel
+                    )
+                }
+                WindowWidthSizeClass.Medium -> {
+                    AppCompactWidthNavigation(
+                        modifier,
+                        navController = navController,
+                        viewModel = viewModel,
+                        loginViewModel = loginViewModel
+                    )
+                }
+                WindowWidthSizeClass.Expanded -> {
+                    AppExpandedWidthNavigation(
+                        modifier,
+                        navController = navController,
+                        viewModel = viewModel,
+                        loginViewModel = loginViewModel
+                    )
+                }
+                else -> {
+                    AppCompactWidthNavigation(
+                        modifier,
+                        navController = navController,
+                        viewModel = viewModel,
+                        loginViewModel = loginViewModel
+                    )
                 }
             }
-
         }
-
     }
 
+
+}
+
+// Big Screen Screen
+
+@ExperimentalMaterial3Api
+@Composable
+fun AppExpandedWidthNavigation(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    viewModel: MainViewController,
+    loginViewModel: LoginViewModel
+) {
+    val navigationDrawerContentDescription = "TEST"
+    PermanentNavigationDrawer(
+        modifier = Modifier.testTag(navigationDrawerContentDescription),
+        drawerContent = {
+            NavigationDrawerContent(
+                modifier = modifier,
+                navController = navController,
+                onNavigate = {
+
+                })
+        }
+    ) {
+        AppBody(
+            navController = navController,
+            modifier = modifier,
+            onTitleChanged = {
+
+            },
+            onCanNavigateBackChanged = {
+
+            },
+            viewModel = viewModel,
+            loginViewModel = loginViewModel
+        )
+
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun NavigationDrawerContent(
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    onNavigate: (Screen) -> Unit
+) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+    Column(
+        modifier
+            .wrapContentWidth()
+            .fillMaxHeight()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(12.dp)
+    ) {
+        for (screen in MainScreens) {
+            NavigationDrawerItem(
+                selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                label = {
+                    Text(
+                        text = stringResource(id = screen.resourceId),
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                },
+                icon = {
+                    Icon(
+                        imageVector = screen.icon,
+                        contentDescription = stringResource(id = screen.resourceId)
+                    )
+                },
+                colors = NavigationDrawerItemDefaults.colors(
+                    unselectedContainerColor = Color.Transparent
+                ),
+                onClick = {
+                    navController.navigate(screen.route) {
+                        // Pop up to the start destination of the graph to
+                        // avoid building up a large stack of destinations
+                        // on the back stack as users select items
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        // Avoid multiple copies of the same destination when
+                        // reselecting the same item
+                        launchSingleTop = true
+                        // Restore state when reselecting a previously selected item
+                        restoreState = true
+                    }
+                    onNavigate(screen)
+                }
+            )
+        }
+    }
+}
+
+// Normal Screen
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppCompactWidthNavigation(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    viewModel: MainViewController,
+    loginViewModel: LoginViewModel
+) {
+
+    /**
+     * Default Home Screen
+     */
+    var currentScreenTitle by remember {
+        mutableStateOf(Screen.Home.resourceId)
+    }
+
+    var canNavigateBack by remember {
+        mutableStateOf(false)
+    }
+
+    Scaffold(
+        topBar = {
+            TopBar(
+                title = currentScreenTitle,
+                canNavigateBack = canNavigateBack,
+                modifier
+            ) {
+                navController.navigateUp()
+            }
+
+        },
+        bottomBar = {
+            BottomBar(navController, modifier) {
+                currentScreenTitle = it.resourceId
+            }
+        }) { innerPadding ->
+        AppBody(
+            innerPadding = innerPadding,
+            navController = navController,
+            modifier = modifier,
+            onTitleChanged = {
+                currentScreenTitle = it;
+            },
+            onCanNavigateBackChanged = {
+                canNavigateBack = it
+            },
+            viewModel = viewModel,
+            loginViewModel = loginViewModel
+        )
+
+    }
+}
+
+
+// Common
+
+@Composable
+fun AppBody(
+    modifier: Modifier = Modifier,
+    innerPadding: PaddingValues = PaddingValues(Dp(10.0f)),
+    navController: NavHostController,
+    onTitleChanged: (Int) -> Unit,
+    onCanNavigateBackChanged: (Boolean) -> Unit,
+    viewModel: MainViewController,
+    loginViewModel: LoginViewModel
+) {
+    NavHost(
+        navController,
+        startDestination = Screen.Home.route,
+        Modifier.padding(innerPadding)
+    ) {
+        composable(Screen.Home.route) { HomeBody(navController) }
+        composable(Screen.Stats.route) { StatsBody(navController) }
+        composable(Screen.Goals.route) { GoalsBody(navController) }
+        composable(Screen.Profile.route) { ProfileBody(navController, loginViewModel) }
+    }
+}
+
+
+@Composable
+fun BottomBar(
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    onNavigate: (Screen) -> Unit
+) {
+    BottomNavigation(modifier) {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentDestination = navBackStackEntry?.destination
+        MainScreens.forEach { screen ->
+            BottomNavigationItem(
+                icon = { Icon(screen.icon, contentDescription = null) },
+                label = { Text(stringResource(screen.resourceId)) },
+                selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                onClick = {
+                    navController.navigate(screen.route) {
+                        // Pop up to the start destination of the graph to
+                        // avoid building up a large stack of destinations
+                        // on the back stack as users select items
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        // Avoid multiple copies of the same destination when
+                        // reselecting the same item
+                        launchSingleTop = true
+                        // Restore state when reselecting a previously selected item
+                        restoreState = true
+                    }
+                    onNavigate(screen)
+                }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopBar(
+    @StringRes title: Int,
+    canNavigateBack: Boolean,
+    modifier: Modifier = Modifier,
+    navigateBack: () -> Unit
+) {
+    TopAppBar(
+        title = { Text(stringResource(id = title)) },
+        modifier = modifier,
+        navigationIcon = {
+            if (canNavigateBack) {
+                IconButton(onClick = navigateBack) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "RETOUR"
+                    )
+                }
+            }
+        },
+    )
 }

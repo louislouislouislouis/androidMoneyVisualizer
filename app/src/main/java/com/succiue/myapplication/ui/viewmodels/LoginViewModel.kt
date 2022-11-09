@@ -6,6 +6,7 @@ import android.content.IntentSender
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -16,9 +17,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.succiue.myapplication.MainActivity
+import com.succiue.myapplication.data.model.User
+import com.succiue.myapplication.utils.multipleNonNull
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.launch
 
 class LoginViewModel(loginActivity: Activity) : ViewModel() {
     //Initialized once
@@ -44,6 +51,28 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
     private lateinit var mGoogleSignInClient: GoogleSignInClient
 
     val loginEnable = mutableStateOf(true)
+
+
+    /**
+     * idToken can be given by the FirebaseUser if google server has the amiability to respond
+     */
+    private var idToken: String? = null
+
+    /**
+     * uId can be given by the FirebaseUser if google server has the amiability to respond
+     */
+    private var uId: String? = null
+
+    /**
+     * displayName can be given by the FirebaseUser if google server has the amiability to respond
+     */
+    private var displayName: String? = null
+
+    /**
+     * email can be given by the FirebaseUser if google server has the amiability to respond
+     */
+    private var email: String? = null
+
 
     /**
      * Has to be called when the activity is started
@@ -80,11 +109,39 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
         try {
             Firebase.auth.signOut()
             mGoogleSignInClient.signOut();
-            loginEnable.value = true
+            loginEnable.value = true;
+
         } catch (e: Exception) {
             Log.d("GOOGLEAUTH", e.localizedMessage)
         }
 
+    }
+
+
+    suspend fun issThereAnyPerson(user: FirebaseUser): User? {
+        //if there is no FirebaseUser saved in mobile, don't need to dp that
+        if (user != null) {
+            // Generate all the info if FirebaseUser is found
+            val def = CompletableDeferred<User?>()
+            user?.getIdToken(true)?.addOnSuccessListener {
+                it.token?.let { token ->
+                    idToken = token
+                    displayName = user?.displayName
+                    uId = user?.uid
+                    email = user?.email
+                    multipleNonNull(uId, displayName, email, idToken) { id, displayN, mail, idTkn ->
+                        def.complete(User(id, displayN, mail, idTkn))
+                    }
+                }
+            }?.addOnFailureListener {
+                // If Google server does not want to respond
+                Log.d("GOOGLEAUTH", it.localizedMessage)
+                def.complete(null)
+            }
+            return def.await()
+        } else {
+            return null
+        }
     }
 
     fun isThereAnyPerson() {
@@ -137,6 +194,33 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d("GOOGLEAUTH", "signInWithCredential:success")
                         loginEnable.value = false
+
+                        val user = Firebase.auth.currentUser?.let {
+                            // If b is not null
+                            viewModelScope.launch {
+
+                                val user = issThereAnyPerson(it)
+                                // Choose which screen to launch
+                                val toLaunch = MainActivity::class.java
+
+                                // Create intent for Activity
+                                val intent = Intent(loginActivity, toLaunch)
+
+                                // Add user as a parameter (only used in MainScreen)
+                                intent.putExtra("user", user)
+
+                                //Add additional delay if too quick
+
+
+                                //Start new activity and quit this one
+                                loginActivity.startActivity(intent)
+                                loginActivity.finish()
+
+                            }
+
+                        }
+
+
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w("GOOGLEAUTH", "signInWithCredential:failure", task.exception)
