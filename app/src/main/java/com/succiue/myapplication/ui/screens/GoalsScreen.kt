@@ -1,12 +1,14 @@
 package com.succiue.myapplication.ui.screens
 
+import android.annotation.SuppressLint
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,8 +62,13 @@ fun Goals(modifier: Modifier = Modifier, navController: NavController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = { /*TODO*/ }) {
+        Button(onClick = { /*TODO*/ }, colors  = ButtonDefaults.buttonColors(
+            backgroundColor = MaterialTheme.colors.onBackground,
+            contentColor = MaterialTheme.colors.onPrimary
+        )) {
             Text("Share my Goals")
         }
+
     }
+
 }

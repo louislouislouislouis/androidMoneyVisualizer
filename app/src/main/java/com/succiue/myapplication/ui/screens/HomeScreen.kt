@@ -68,7 +68,10 @@ fun Home(modifier: Modifier = Modifier, navController: NavController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = { /*TODO*/ }) {
+        Button(onClick = { /*TODO*/ }, colors  = ButtonDefaults.buttonColors(
+            backgroundColor = MaterialTheme.colors.onBackground,
+            contentColor = MaterialTheme.colors.onPrimary
+            )) {
             Text("Share my Home")
         }
     }

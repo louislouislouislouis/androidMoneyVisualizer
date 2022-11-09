@@ -1,30 +1,44 @@
 package com.succiue.myapplication.ui.theme
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 
+@SuppressLint("ConflictingOnColor")
 private val DarkColorPalette = darkColors(
-    primary = Purple200,
-    primaryVariant = Purple700,
-    secondary = Teal200
+    primary = DarkGrey, //Primary Color
+    primaryVariant = LightGrey,
+    onPrimary = LightGrey, //When on Primary Color
+
+    secondary = Grey,
+    //onSecondary = Purple500,
+
+    background = DarkGrey,
+    onBackground = Grey,
+
+    //surface = Color.White,
+    //onSurface = Purple500,
 )
 
+@SuppressLint("ConflictingOnColor")
 private val LightColorPalette = lightColors(
-    primary = Purple500,
-    primaryVariant = Purple700,
-    secondary = Teal200
+    primary = LightGrey, //Primary Color
+    primaryVariant = Blue,
+    onPrimary = DarkGrey, //When on Primary Color
 
-    /* Other default colors to override
-    background = Color.White,
-    surface = Color.White,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-    */
+    secondary = LightBlue,
+    //onSecondary = Purple500,
+
+    background = LightGrey,
+    onBackground = Color.White,
+
+//surface = Color.White,
+    //onSurface = Purple500,
 )
 
 @Composable
@@ -34,6 +48,7 @@ fun MyApplicationTheme(
 ) {
     val colors = if (darkTheme) {
         DarkColorPalette
+
     } else {
         LightColorPalette
     }

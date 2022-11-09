@@ -1,6 +1,7 @@
 package com.succiue.myapplication.ui.screens
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -13,6 +14,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -23,10 +25,10 @@ import androidx.navigation.compose.rememberNavController
 import com.succiue.myapplication.R
 
 sealed class AppScreen(val route: String, @StringRes val title: Int, val icon: Int) {
-    object Home : AppScreen("home", R.string.home, R.drawable.ic_baseline_home_24)
-    object Statistics : AppScreen("statistics", R.string.statistics, R.drawable.baseline_pie_chart_24)
-    object Goals : AppScreen("goals", R.string.goals, R.drawable.ic_baseline_checklist_24)
-    object Profil : AppScreen("profil", R.string.profil, R.drawable.ic_baseline_person_24)
+    object Home : AppScreen("home", R.string.home, R.drawable.home)
+    object Statistics : AppScreen("statistics", R.string.statistics, R.drawable.data_management)
+    object Goals : AppScreen("goals", R.string.goals, R.drawable.dollar)
+    object Profil : AppScreen("profil", R.string.profil, R.drawable.user)
 }
 
 @Composable
@@ -37,6 +39,7 @@ fun TopBar(@StringRes title: Int,
     TopAppBar(
         title = { Text(stringResource(id = title)) },
         modifier = modifier,
+        backgroundColor = MaterialTheme.colors.primary,
         navigationIcon = {
             if(canNavigateBack) {
                 IconButton(onClick = navigateBack) {
@@ -65,10 +68,14 @@ fun BottomBar(modifier: Modifier = Modifier,
         AppScreen.Profil
     )
 
-    BottomAppBar(modifier) {
+    BottomAppBar(modifier, backgroundColor = MaterialTheme.colors.primary) {
         items.forEach { screen ->
             BottomNavigationItem(
-                icon = { Icon(painterResource(id = screen.icon), contentDescription = null) },
+                selectedContentColor = MaterialTheme.colors.primaryVariant,
+                unselectedContentColor = MaterialTheme.colors.secondary,
+                icon = { Icon(painter= painterResource(id =screen.icon), contentDescription = null, modifier = Modifier
+                    .fillMaxSize()
+                    .padding(vertical = 10.dp)) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = {
                     navController.navigate(screen.route) {
