@@ -103,7 +103,8 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
      * Function Called on UserIntent
      */
     fun login() {
-        logWithOneTapAndMightWellBeAnMFFailure()
+        //logWithOneTapAndMightWellBeAnMFFailure()
+        loginSigninOldMethodButAlwaysMFWork()
     }
 
     fun logout() {
