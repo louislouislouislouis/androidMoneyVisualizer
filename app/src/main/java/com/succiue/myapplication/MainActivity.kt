@@ -77,8 +77,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MyApplicationTheme {
-                //val windowSize = calculateWindowSizeClass(activity = this)
-                AppScreen()
+                val windowSize = calculateWindowSizeClass(activity = this)
+                AppScreen(windowSize)
             }
         }
     }

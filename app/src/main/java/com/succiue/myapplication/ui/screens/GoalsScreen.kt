@@ -41,7 +41,7 @@ fun NavGraphBuilder.goalsListNavigation(
             })
         }
         composable(route = AddGoalRoutes.SelectCategory.name) {
-            onCanNavigateBackChange(false)
+            onCanNavigateBackChange(true)
             SelectCategoriesLanScreen(modifier, onNextButtonClicked = {
                 navController.navigate(AddGoalRoutes.Summary.name)
             })

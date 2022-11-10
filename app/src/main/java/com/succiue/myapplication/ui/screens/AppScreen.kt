@@ -1,23 +1,32 @@
 package com.succiue.myapplication.ui.screens
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
+import androidx.compose.material3.PermanentNavigationDrawer
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -30,6 +39,13 @@ sealed class AppScreen(val route: String, @StringRes val title: Int, val icon: I
     object Goals : AppScreen("goals", R.string.goals, R.drawable.dollar)
     object Profil : AppScreen("profil", R.string.profil, R.drawable.user)
 }
+
+val items = listOf(
+    AppScreen.Home,
+    AppScreen.Statistics,
+    AppScreen.Goals,
+    AppScreen.Profil
+)
 
 @Composable
 fun TopBar(@StringRes title: Int,
@@ -61,13 +77,6 @@ fun BottomBar(modifier: Modifier = Modifier,
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    val items = listOf(
-        AppScreen.Home,
-        AppScreen.Statistics,
-        AppScreen.Goals,
-        AppScreen.Profil
-    )
-
     BottomAppBar(modifier, backgroundColor = MaterialTheme.colors.primary) {
         items.forEach { screen ->
             BottomNavigationItem(
@@ -93,8 +102,52 @@ fun BottomBar(modifier: Modifier = Modifier,
 }
 
 @Composable
-fun AppScreen(modifier: Modifier = Modifier) {
+fun AppScreen(windowSize: WindowSizeClass, modifier: Modifier = Modifier) {
     val navController = rememberNavController()
+
+    when(windowSize.widthSizeClass) {
+        WindowWidthSizeClass.Compact -> {
+            compactWidthApp(navController = navController, modifier)
+        }
+        WindowWidthSizeClass.Medium -> {
+            compactWidthApp(navController = navController, modifier)
+        }
+        WindowWidthSizeClass.Expanded -> {
+            expandedWidthApp(navController = navController, modifier)
+        }
+        else -> {
+            compactWidthApp(navController = navController)
+        }
+    }
+}
+
+@Composable
+fun appBody(modifier : Modifier = Modifier,
+            innerPadding: PaddingValues = PaddingValues(Dp(10.0f)),
+            navController : NavHostController,
+            onTitleChanged : (Int) -> Unit,
+            onCanNavigateBackChanged : (Boolean) -> Unit) {
+    NavHost(
+        navController = navController,
+        startDestination = AppScreen.Home.route,
+        modifier.padding(innerPadding)
+    ) {
+        goalsListNavigation(
+            navController = navController,
+            modifier = modifier,
+            onTitleChanged = onTitleChanged,
+            onCanNavigateBackChange = onCanNavigateBackChanged
+        )
+        composable(AppScreen.Home.route) { Home(modifier, navController) }
+        composable(AppScreen.Statistics.route) { Statistics(modifier, navController) }
+        //composable(AppScreen.Goals.route) { Goals(modifier, navController) }
+        composable(AppScreen.Profil.route) { Profil(modifier, navController) }
+
+    }
+}
+
+@Composable
+fun compactWidthApp(navController : NavHostController, modifier: Modifier = Modifier) {
     val startDestination = AppScreen.Home
 
     var currentTitle by remember {
@@ -117,17 +170,71 @@ fun AppScreen(modifier: Modifier = Modifier) {
             }
         }
     ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = startDestination.route,
-            modifier.padding(innerPadding)
-        ) {
-            goalsListNavigation(navController = navController, modifier = Modifier, onTitleChanged = {}, onCanNavigateBackChange = { canNavigateBack = it })
-            composable(AppScreen.Home.route) { Home(modifier, navController) }
-            composable(AppScreen.Statistics.route) { Statistics(modifier, navController) }
-            //composable(AppScreen.Goals.route) { Goals(modifier, navController) }
-            composable(AppScreen.Profil.route) { Profil(modifier, navController) }
+        appBody(modifier, innerPadding, navController = navController, onTitleChanged = {}, onCanNavigateBackChanged = { canNavigateBack = it })
+    }
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun navigationDrawerContent(navController: NavController,
+                                    modifier: Modifier = Modifier,
+                                    onNavigate: (AppScreen)->Unit){
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+    Column(
+        modifier
+            .wrapContentWidth()
+            .fillMaxHeight()
+            .background(MaterialTheme.colors.background)
+            .padding(12.dp)
+    ) {
+        for (screen in items) {
+            NavigationDrawerItem(
+                selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                label = {
+                    Text(
+                        text = stringResource(id = screen.title),
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                },
+                icon = {
+                    Icon(
+                        painter = painterResource(id = screen.icon),
+                        contentDescription = stringResource(id = screen.title)
+                    )
+                },
+                colors = NavigationDrawerItemDefaults.colors(
+                    unselectedContainerColor = Color.Transparent
+                ),
+                onClick = {
+                    navController.navigate(screen.route) {
+                        // Pop up to the start destination of the graph to
+                        // avoid building up a large stack of destinations
+                        // on the back stack as users select items
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        // Avoid multiple copies of the same destination when
+                        // reselecting the same item
+                        launchSingleTop = true
+                        // Restore state when reselecting a previously selected item
+                        restoreState = true
+                    }
+                    onNavigate(screen)
+                }
+            )
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun expandedWidthApp(navController : NavHostController, modifier: Modifier = Modifier) {
+    PermanentNavigationDrawer(drawerContent = {
+        navigationDrawerContent(modifier = modifier, navController = navController, onNavigate = {})
+    }) {
+        appBody(navController = navController, onTitleChanged = {}, onCanNavigateBackChanged = {})
     }
 }
