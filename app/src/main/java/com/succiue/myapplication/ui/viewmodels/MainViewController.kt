@@ -34,7 +34,7 @@ class MainViewController(var user: User) : ViewModel() {
         publicToken.value = publicTokenValue
 
         dummyContext?.let {
-            account?.getAccessToken(it, accessToken, publicTokenValue)
+            account?.getAccessToken(it, accessToken, publicTokenValue, needAnAccess)
         }
     }
 
@@ -62,12 +62,13 @@ class MainViewController(var user: User) : ViewModel() {
                 var accessToken: String
                 try {
                     try {
+
                         accessToken = response.get("accessToken") as String
                         Log.d("ACCOUNT", accessToken)
                         needAnAccess.value = false
-                    } catch (e : Exception) {
-                        var test =  response.get("accessToken") as Boolean
-                        Log.d("ACCOUNT", "false")
+                    } catch (e: Exception) {
+                        var test = response.get("accessToken") as Boolean
+                        Log.d("ACCOUNTTT", e.localizedMessage)
                         needAnAccess.value = true
                     }
 

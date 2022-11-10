@@ -66,7 +66,8 @@ class Account(var owner: User) {
     fun getAccessToken(
         ctx: Context,
         access_token: MutableState<String>,
-        publicToken: String
+        publicToken: String,
+        needAnAccess: MutableState<Boolean>,
     ) {
         // in the below line, we are creating a variable for url.
         var url = "https://bankbackuqac.herokuapp.com/bank/exchangePktoAccessToken"
@@ -86,6 +87,8 @@ class Account(var owner: User) {
                 val access_tokenValue = response.get("access_token") as String
                 //update the view
                 access_token.value = access_tokenValue
+                needAnAccess.value = false
+
                 Log.d("ACCESS_VAL", access_tokenValue)
             },
             Response.ErrorListener { error ->
