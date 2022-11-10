@@ -59,11 +59,17 @@ class MainViewController(var user: User) : ViewModel() {
             "https://bankbackuqac.herokuapp.com/bank/getAccessToken",
             com.android.volley.Request.Method.POST,
             onSuccess = { response ->
-                val accessToken: String
+                var accessToken: String
                 try {
-                    accessToken = response.get("accessToken") as String
-                    Log.d("ACCOUNT", accessToken)
-                    needAnAccess.value = false
+                    try {
+                        accessToken = response.get("accessToken") as String
+                        Log.d("ACCOUNT", accessToken)
+                        needAnAccess.value = false
+                    } catch (e : Exception) {
+                        var test =  response.get("accessToken") as Boolean
+                        Log.d("ACCOUNT", "false")
+                        needAnAccess.value = true
+                    }
 
                 } catch (e: Exception) {
                     Log.d("ACCOUNT-333", e.localizedMessage)
