@@ -18,7 +18,7 @@ fun NoAccountBody(viewModel: MainViewController) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text("Hello" + viewModel.user.displayName)
-        Text(text = "U DO NOT HAVE AN ACCOUNT TO THE BANK! FUCK")
+        Text(text = "U DO NOT HAVE AN ACCOUNT TO THE BANK!")
         valueToken(
             text1 = viewModel.linkToken.value,
             text2 = viewModel.publicToken.value,
@@ -27,8 +27,10 @@ fun NoAccountBody(viewModel: MainViewController) {
         CustomButtom(stringResource(R.string.welcoming_user)) {
             viewModel.linkAccount(ctx)
         }
-        CustomButtom(stringResource(R.string.connectToGoogle)) {
-            viewModel.connectToGoogle(ctx)
-        }
+        Text(
+            text = "Tuto : Choose any bank --> Password=pass_good ; user = user_good; and if " +
+                    "mobile verfication code = 1234 "
+        )
+
     }
 }

@@ -59,11 +59,12 @@ fun MoneyVisualizerHome(
     windowsSize: WindowSizeClass,
     modifier: Modifier = Modifier
 ) {
+    var needAnAccess by remember { viewModel.needAnAccess }
     val navController = rememberNavController()
     if (viewModel.isLoading.value) {
         Text(text = "LOADING")
     } else {
-        if (viewModel.needAnAccess.value) {
+        if (needAnAccess) {
             NoAccountBody(viewModel)
         } else {
             when (windowsSize.widthSizeClass) {

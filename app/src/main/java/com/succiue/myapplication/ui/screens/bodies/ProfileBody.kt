@@ -13,12 +13,7 @@ fun ProfileBody(navController: NavHostController, viewModel: LoginViewModel) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Button(
-            enabled = viewModel.loginEnable.value,
-            onClick = { viewModel.login() })
-        {
-            Text(text = "LOGIN WITH GOOGLE")
-        }
+        
         Button(
             enabled = !viewModel.loginEnable.value,
             onClick = { viewModel.logout() })

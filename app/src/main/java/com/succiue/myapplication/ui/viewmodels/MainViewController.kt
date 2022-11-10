@@ -64,10 +64,14 @@ class MainViewController(var user: User) : ViewModel() {
                     accessToken = response.get("accessToken") as String
                     Log.d("ACCOUNT", accessToken)
                     needAnAccess.value = false
+
                 } catch (e: Exception) {
+                    Log.d("ACCOUNT-333", e.localizedMessage)
                     needAnAccess.value = true
                 }
                 isLoading.value = false;
+
+
             },
             onFailure = { error ->
                 Log.d("ACCOUNT", error.localizedMessage)

@@ -34,11 +34,9 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
         // Get user variable
         user = intent.getSerializable("user", User::class.java)
-        
+
         //Create VM with user
         var viewModel = MainViewController(user)
         Log.d("USER", user.toString())

@@ -21,6 +21,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.succiue.myapplication.LoginActivity
 import com.succiue.myapplication.MainActivity
 import com.succiue.myapplication.data.model.User
 import com.succiue.myapplication.utils.multipleNonNull
@@ -110,10 +111,28 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
             Firebase.auth.signOut()
             mGoogleSignInClient.signOut();
             loginEnable.value = true;
-
         } catch (e: Exception) {
             Log.d("GOOGLEAUTH", e.localizedMessage)
         }
+
+
+        // If b is not null
+        viewModelScope.launch {
+
+
+            // Choose which screen to launch
+            val toLaunch = LoginActivity::class.java
+
+            // Create intent for Activity
+            val intent = Intent(loginActivity, toLaunch)
+
+
+            //Start new activity and quit this one
+            loginActivity.startActivity(intent)
+            loginActivity.finish()
+
+        }
+
 
     }
 
@@ -195,7 +214,7 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
                         Log.d("GOOGLEAUTH", "signInWithCredential:success")
                         loginEnable.value = false
 
-                        val user = Firebase.auth.currentUser?.let {
+                        Firebase.auth.currentUser?.let {
                             // If b is not null
                             viewModelScope.launch {
 
