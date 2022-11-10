@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
@@ -41,7 +42,7 @@ class SplashActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Icon(painter = painterResource(id = R.drawable.logo_app_mobile), contentDescription = null, modifier = Modifier.fillMaxSize().padding(horizontal = 100.dp), tint = Color.Unspecified)
+                    Icon(painter = painterResource(id = R.drawable.logo_app_mobile), contentDescription = null, modifier = Modifier.fillMaxSize().fillMaxHeight().padding(horizontal = 100.dp, vertical = 100.dp), tint = Color.Unspecified)
                 }
             }
         }
