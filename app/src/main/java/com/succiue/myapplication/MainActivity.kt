@@ -29,7 +29,7 @@ import com.succiue.myapplication.utils.getSerializable
 class MainActivity : ComponentActivity() {
 
     /**
-     * Our current User Connectd
+     * Our current User Connected
      */
     private lateinit var user: User
 
@@ -60,7 +60,6 @@ class MainActivity : ComponentActivity() {
                     is LinkSuccess -> peekAvailableContext()?.let { ctx ->
                         mainAppViewModel.onSuccess(it, ctx)
                     }
-
                     is LinkExit -> Log.d(
                         "ConnectPlaid",
                         "Error Connecting To Bank Api"
@@ -93,8 +92,14 @@ class MainActivity : ComponentActivity() {
 
     }
 
+    @Deprecated("Just a dummy Message to make warning shut up", level = DeprecationLevel.HIDDEN)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        @Suppress("DEPRECATION")
         super.onActivityResult(requestCode, resultCode, data)
+
+        /**
+         * Let the ViewController manage it
+         */
         loginViewModel.handleActivityResult(requestCode, resultCode, data)
     }
 

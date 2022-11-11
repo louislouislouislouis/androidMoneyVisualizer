@@ -51,6 +51,11 @@ class MainViewController(var user: User) : ViewModel() {
 
     }
 
+
+    /**
+     * Not User Intent
+     * This function is the OnSuccess of the Activity Launched by Plaid DSK
+     */
     fun getAccessToken(ctx: Context) {
         isLoading.value = true;
         sendRequest(
@@ -61,7 +66,6 @@ class MainViewController(var user: User) : ViewModel() {
                 var accessToken: String
                 try {
                     try {
-
                         accessToken = response.get("accessToken") as String
                         Log.d("ACCOUNT", accessToken)
                         needAnAccess.value = false
