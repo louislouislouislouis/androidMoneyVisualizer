@@ -12,7 +12,7 @@ import com.succiue.myapplication.ui.fragment.valueToken
 import com.succiue.myapplication.ui.viewmodels.MainViewController
 
 @Composable
-fun NoAccountBody(viewModel: MainViewController) {
+fun NoAccountScreen(viewModel: MainViewController) {
     var ctx = LocalContext.current;
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -25,7 +25,7 @@ fun NoAccountBody(viewModel: MainViewController) {
             text3 = viewModel.accessToken.value
         )
         CustomButtom(stringResource(R.string.welcoming_user)) {
-            viewModel.linkAccount(ctx)
+            viewModel.connectToBank(ctx)
         }
         Text(
             text = "Tuto : Choose any bank --> Password=pass_good ; user = user_good; and if " +

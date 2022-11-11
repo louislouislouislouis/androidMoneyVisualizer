@@ -59,53 +59,63 @@ fun MoneyVisualizerHome(
     windowsSize: WindowSizeClass,
     modifier: Modifier = Modifier
 ) {
+    // State Variable
     var needAnAccess by remember { viewModel.needAnAccess }
+    var isLoading by remember { viewModel.isLoading }
     val navController = rememberNavController()
-    if (viewModel.isLoading.value) {
-        Text(text = "LOADING")
-    } else {
-        if (needAnAccess) {
-            NoAccountBody(viewModel)
-        } else {
-            when (windowsSize.widthSizeClass) {
-                WindowWidthSizeClass.Compact -> {
-                    AppCompactWidthNavigation(
-                        modifier,
-                        navController = navController,
-                        viewModel = viewModel,
-                        loginViewModel = loginViewModel
-                    )
-                }
-                WindowWidthSizeClass.Medium -> {
-                    AppCompactWidthNavigation(
-                        modifier,
-                        navController = navController,
-                        viewModel = viewModel,
-                        loginViewModel = loginViewModel
-                    )
-                }
-                WindowWidthSizeClass.Expanded -> {
-                    AppExpandedWidthNavigation(
-                        modifier,
-                        navController = navController,
-                        viewModel = viewModel,
-                        loginViewModel = loginViewModel
-                    )
-                }
-                else -> {
-                    AppCompactWidthNavigation(
-                        modifier,
-                        navController = navController,
-                        viewModel = viewModel,
-                        loginViewModel = loginViewModel
-                    )
-                }
-            }
-        }
+
+    // Loading Screen
+    if (isLoading) {
+        LoadingScreen()
+        return
     }
 
+    // Connect Account Screen
+    if (needAnAccess) {
+        NoAccountScreen(viewModel)
+        return
+    }
 
+    /*
+       * Show Normal Screen Only if no loading or don't need Connect bank
+       *
+     */
+    when (windowsSize.widthSizeClass) {
+        WindowWidthSizeClass.Compact -> {
+            AppCompactWidthNavigation(
+                modifier,
+                navController = navController,
+                viewModel = viewModel,
+                loginViewModel = loginViewModel
+            )
+        }
+        WindowWidthSizeClass.Medium -> {
+            AppCompactWidthNavigation(
+                modifier,
+                navController = navController,
+                viewModel = viewModel,
+                loginViewModel = loginViewModel
+            )
+        }
+        WindowWidthSizeClass.Expanded -> {
+            AppExpandedWidthNavigation(
+                modifier,
+                navController = navController,
+                viewModel = viewModel,
+                loginViewModel = loginViewModel
+            )
+        }
+        else -> {
+            AppCompactWidthNavigation(
+                modifier,
+                navController = navController,
+                viewModel = viewModel,
+                loginViewModel = loginViewModel
+            )
+        }
+    }
 }
+
 
 // Big Screen Screen
 
@@ -202,8 +212,10 @@ private fun NavigationDrawerContent(
     }
 }
 
-// Normal Screen
-
+/*
+ * The normal Screen for normal user
+ *
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppCompactWidthNavigation(
@@ -214,12 +226,11 @@ fun AppCompactWidthNavigation(
 ) {
 
     /**
-     * Default Home Screen
+     * State Var
      */
     var currentScreenTitle by remember {
         mutableStateOf(Screen.Home.resourceId)
     }
-
     var canNavigateBack by remember {
         mutableStateOf(false)
     }

@@ -1,14 +1,12 @@
 package com.succiue.myapplication.ui.viewmodels
 
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.plaid.link.configuration.LinkTokenConfiguration
 import com.plaid.link.result.LinkSuccess
-import com.succiue.myapplication.LoginActivity
 import com.succiue.myapplication.data.model.Account
 import com.succiue.myapplication.data.model.User
 import com.succiue.myapplication.utils.sendRequest
@@ -23,33 +21,34 @@ class MainViewController(var user: User) : ViewModel() {
     val publicToken = mutableStateOf("")
     val accessToken = mutableStateOf("")
     val linkToken = mutableStateOf("")
-    var dummyContext: Context? = null
 
 
+    /**
+     * The laucher has to be initialized by the activity
+     */
     var linkAccountToPlaid: ActivityResultLauncher<LinkTokenConfiguration>? = null
 
-    fun onSuccess(res: LinkSuccess) {
+    fun onSuccess(res: LinkSuccess, ctx: Context) {
         // Send public_token to your server, exchange for access_token
         var publicTokenValue = res.publicToken
         publicToken.value = publicTokenValue
+        account?.getAccessToken(ctx, accessToken, publicTokenValue, needAnAccess)
 
-        dummyContext?.let {
-            account?.getAccessToken(it, accessToken, publicTokenValue, needAnAccess)
-        }
     }
 
-    //user intent
-    fun linkAccount(ctx: Context) {
-
-        dummyContext = ctx
-        if (linkAccountToPlaid != null) {
-            Log.d("TEST", "fre")
-            account?.getPublicToken(
+    /**
+     * User Intent:
+     * Function called on a button
+     */
+    fun connectToBank(ctx: Context) {
+        linkAccountToPlaid?.let {
+            account.getPublicToken(
                 ctx = ctx,
-                linkAccountToPlaid = linkAccountToPlaid!!,
+                linkAccountToPlaid = it,
                 linkToken = linkToken
             )
         }
+
     }
 
     fun getAccessToken(ctx: Context) {
@@ -86,11 +85,6 @@ class MainViewController(var user: User) : ViewModel() {
             },
             owner = user
         )
-    }
-
-    fun connectToGoogle(ctx: Context) {
-        val intent = Intent(ctx, LoginActivity::class.java)
-        ctx.startActivity(intent)
     }
 
 

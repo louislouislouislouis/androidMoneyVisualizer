@@ -22,30 +22,45 @@ import com.succiue.myapplication.ui.viewmodels.LoginViewModel
 import com.succiue.myapplication.ui.viewmodels.MainViewController
 import com.succiue.myapplication.utils.getSerializable
 
-
+/**
+ * This Class has to be called with an User
+ * This has to be in the parameter of the intent
+ */
 class MainActivity : ComponentActivity() {
+
     /**
-     * Current User Connected.
-     * This has to be in the parameter of the intent
+     * Our current User Connectd
      */
     private lateinit var user: User
+
+    /**
+     * The loginViewModel of our App
+     */
     private var loginViewModel = LoginViewModel(this)
+
+    /**
+     * The mainViewModel of our App
+     */
+    private lateinit var mainAppViewModel: MainViewController
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         // Get user variable
         user = intent.getSerializable("user", User::class.java)
 
         //Create VM with user
-        var viewModel = MainViewController(user)
-        Log.d("USER", user.toString())
+        mainAppViewModel = MainViewController(user)
 
         // Create an ActivityLauncher for connect Account and give it to controller
         val linkAccountToPlaid =
             registerForActivityResult(OpenPlaidLink()) {
                 when (it) {
-                    is LinkSuccess -> viewModel.onSuccess(it)
+                    is LinkSuccess -> peekAvailableContext()?.let { ctx ->
+                        mainAppViewModel.onSuccess(it, ctx)
+                    }
+
                     is LinkExit -> Log.d(
                         "ConnectPlaid",
                         "Error Connecting To Bank Api"
@@ -53,12 +68,13 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-        // Activate good
-        viewModel.linkAccountToPlaid = linkAccountToPlaid
+        // Activate viewModel (has to be done in onCreate)
+        mainAppViewModel.linkAccountToPlaid = linkAccountToPlaid
         loginViewModel.initViewModel(this)
-        peekAvailableContext()?.let { viewModel.getAccessToken(it) }
 
-        // TODO: Change the look
+        // Get AccessToken
+        peekAvailableContext()?.let { mainAppViewModel.getAccessToken(it) }
+
         setContent {
             MyApplicationTheme {
                 // A surface container using the 'background' color from the theme
@@ -66,7 +82,11 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background,
                 ) {
-                    MoneyVisualizerHome(viewModel, loginViewModel, calculateWindowSizeClass(this))
+                    MoneyVisualizerHome(
+                        mainAppViewModel,
+                        loginViewModel,
+                        calculateWindowSizeClass(this)
+                    )
                 }
             }
         }
