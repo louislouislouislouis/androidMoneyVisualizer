@@ -17,7 +17,6 @@ import com.plaid.link.result.LinkExit
 import com.plaid.link.result.LinkSuccess
 import com.succiue.myapplication.data.model.User
 import com.succiue.myapplication.ui.screens.MoneyVisualizerHome
-import com.succiue.myapplication.ui.screens.AppScreen
 import com.succiue.myapplication.ui.theme.MyApplicationTheme
 import com.succiue.myapplication.ui.viewmodels.LoginViewModel
 import com.succiue.myapplication.ui.viewmodels.MainViewController
@@ -32,7 +31,7 @@ class MainActivity : ComponentActivity() {
     /**
      * Our current User Connected
      */
-    //private lateinit var user: User
+    private lateinit var user: User
 
     /**
      * The loginViewModel of our App
@@ -109,6 +108,4 @@ class MainActivity : ComponentActivity() {
         // Check if user is signed in (non-null) and update UI accordingly.
         loginViewModel.isThereAnyPerson()
     }
-
-
 }

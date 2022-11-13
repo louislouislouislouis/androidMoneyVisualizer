@@ -46,7 +46,7 @@ val items = listOf(
     AppScreen.Goals,
     AppScreen.Profil
 )
-
+/*
 @Composable
 fun TopBar(@StringRes title: Int,
            canNavigateBack: Boolean,
@@ -238,3 +238,4 @@ fun expandedWidthApp(navController : NavHostController, modifier: Modifier = Mod
         appBody(navController = navController, onTitleChanged = {}, onCanNavigateBackChanged = {})
     }
 }
+*/
