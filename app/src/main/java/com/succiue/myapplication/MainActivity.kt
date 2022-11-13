@@ -16,7 +16,6 @@ import com.plaid.link.result.LinkExit
 import com.plaid.link.result.LinkSuccess
 import com.succiue.myapplication.data.model.User
 import com.succiue.myapplication.ui.screens.AppScreen
-import com.succiue.myapplication.ui.screens.MoneyVizualizerHome
 import com.succiue.myapplication.ui.theme.MyApplicationTheme
 import com.succiue.myapplication.ui.viewmodels.MainViewController
 import com.succiue.myapplication.utils.getSerializable
