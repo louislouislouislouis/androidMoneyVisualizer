@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
-import com.succiue.myapplication.ui.screens.LoginHome
+import com.succiue.myapplication.ui.screens.LoginScreen
 import com.succiue.myapplication.ui.viewmodels.LoginViewModel
 
 
@@ -27,7 +27,7 @@ class LoginActivity : AppCompatActivity() {
                 modifier = Modifier.fillMaxSize(),
 
                 ) {
-                LoginHome(loginViewModel)
+                LoginScreen(loginViewModel)
             }
 
         }

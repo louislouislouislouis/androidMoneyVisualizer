@@ -10,7 +10,7 @@ import com.succiue.myapplication.ui.viewmodels.LoginViewModel
 
 //@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun LoginHome(viewModel: LoginViewModel) {
+fun LoginScreen(viewModel: LoginViewModel) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
