@@ -84,7 +84,9 @@ class MainViewController(var user: User) : ViewModel() {
 
             },
             onFailure = { error ->
-                Log.d("ACCOUNT", error.localizedMessage)
+                error?.let {
+                    Log.d("ACCOUNT", error.localizedMessage)
+                }
                 isLoading.value = false;
             },
             owner = user

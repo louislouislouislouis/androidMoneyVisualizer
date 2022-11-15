@@ -16,13 +16,11 @@ import org.json.JSONObject
 class Account(var owner: User) {
     var id: String = ""
 
-
     fun getPublicToken(
         ctx: Context,
         linkToken: MutableState<String>,
         linkAccountToPlaid: ActivityResultLauncher<LinkTokenConfiguration>
     ) {
-        Log.d("TEST", "fzrgerzgre")
 
         // in the below line, we are creating a variable for url.
         var url = "https://bankbackuqac.herokuapp.com/bank/getLink"

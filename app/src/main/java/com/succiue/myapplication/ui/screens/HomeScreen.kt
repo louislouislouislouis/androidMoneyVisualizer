@@ -7,15 +7,15 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -34,13 +34,12 @@ import com.succiue.myapplication.ui.viewmodels.MainViewController
 sealed class Screen(
     val route: String,
     @StringRes val resourceId: Int,
-    val icon: ImageVector,
-
-    ) {
-    object Home : Screen("home", R.string.home, Icons.Filled.Home)
-    object Stats : Screen("stats", R.string.stats, Icons.Filled.PlayArrow)
-    object Goals : Screen("goals", R.string.goals, Icons.Filled.Star)
-    object Profile : Screen("profile", R.string.profile, Icons.Default.Face)
+    val icon: Int,
+) {
+    object Home : Screen("home", R.string.home, R.drawable.home)
+    object Stats : Screen("stats", R.string.stats, R.drawable.data_management)
+    object Goals : Screen("goals", R.string.goals, R.drawable.dollar)
+    object Profile : Screen("profile", R.string.profile, R.drawable.user)
 }
 
 val MainScreens = listOf(
@@ -184,8 +183,11 @@ private fun NavigationDrawerContent(
                 },
                 icon = {
                     Icon(
-                        imageVector = screen.icon,
-                        contentDescription = stringResource(id = screen.resourceId)
+                        painter = painterResource(id = screen.icon),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(vertical = 10.dp)
                     )
                 },
                 colors = NavigationDrawerItemDefaults.colors(
@@ -305,8 +307,18 @@ fun BottomBar(
         val currentDestination = navBackStackEntry?.destination
         MainScreens.forEach { screen ->
             BottomNavigationItem(
-                icon = { Icon(screen.icon, contentDescription = null) },
-                label = { Text(stringResource(screen.resourceId)) },
+                icon = {
+                    Icon(
+                        painter = painterResource(id = screen.icon),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(vertical = 10.dp)
+                    )
+                },
+                selectedContentColor = MaterialTheme.colorScheme.primary,
+                unselectedContentColor = MaterialTheme.colorScheme.secondary,
+                //label = { Text(stringResource(screen.resourceId)) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = {
                     navController.navigate(screen.route) {
