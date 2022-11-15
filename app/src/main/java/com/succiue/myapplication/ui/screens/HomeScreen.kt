@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -28,6 +27,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.succiue.myapplication.R
+import com.succiue.myapplication.ui.screens.bodies.ProfileBody
 import com.succiue.myapplication.ui.viewmodels.LoginViewModel
 import com.succiue.myapplication.ui.viewmodels.MainViewController
 
@@ -302,7 +302,10 @@ fun BottomBar(
     modifier: Modifier = Modifier,
     onNavigate: (Screen) -> Unit
 ) {
-    BottomNavigation(modifier) {
+    BottomNavigation(
+        modifier,
+        backgroundColor = MaterialTheme.colorScheme.background
+    ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
         MainScreens.forEach { screen ->
@@ -318,7 +321,6 @@ fun BottomBar(
                 },
                 selectedContentColor = MaterialTheme.colorScheme.primary,
                 unselectedContentColor = MaterialTheme.colorScheme.secondary,
-                //label = { Text(stringResource(screen.resourceId)) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = {
                     navController.navigate(screen.route) {
@@ -338,6 +340,7 @@ fun BottomBar(
                 }
             )
         }
+
     }
 }
 
