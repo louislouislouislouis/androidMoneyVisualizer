@@ -18,7 +18,7 @@ fun ProfileBody(navController: NavHostController, viewModel: LoginViewModel) {
             enabled = !viewModel.loginEnable.value,
             onClick = { viewModel.logout() })
         {
-            Text(text = "LOGOUT WITH GOOGLE")
+            Text(text = "Logout")
         }
 
     }

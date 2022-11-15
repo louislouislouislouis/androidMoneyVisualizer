@@ -1,4 +1,4 @@
-package com.succiue.myapplication.ui.screens
+package com.succiue.myapplication.ui.screens.bodies
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -6,5 +6,5 @@ import androidx.navigation.NavHostController
 
 @Composable
 fun HomeBody(navController: NavHostController) {
-    Text("Je suis la page Home")
+    Text("I am the Home Body")
 }

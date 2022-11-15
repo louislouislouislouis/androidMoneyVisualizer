@@ -12,7 +12,7 @@ import com.succiue.myapplication.ui.viewmodels.MainViewController
 
 @Composable
 fun NoAccountScreen(viewModel: MainViewController) {
-    var ctx = LocalContext.current;
+    val ctx = LocalContext.current
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -25,8 +25,8 @@ fun NoAccountScreen(viewModel: MainViewController) {
             Text(text = stringResource(R.string.welcoming_user))
         }
         Text(
-            text = "Tuto : Choose any bank --> Password=pass_good ; user = user_good; and if " +
-                    "mobile verfication code = 1234 "
+            text = "Tutorial : Choose any bank --> Password=pass_good ; user = user_good; and if " +
+                    "mobile verification code = 1234 "
         )
 
     }

@@ -27,7 +27,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.succiue.myapplication.R
+import com.succiue.myapplication.ui.screens.bodies.GoalsBody
+import com.succiue.myapplication.ui.screens.bodies.HomeBody
 import com.succiue.myapplication.ui.screens.bodies.ProfileBody
+import com.succiue.myapplication.ui.screens.bodies.StatsBody
 import com.succiue.myapplication.ui.viewmodels.LoginViewModel
 import com.succiue.myapplication.ui.viewmodels.MainViewController
 
@@ -59,8 +62,8 @@ fun MoneyVisualizerHome(
     modifier: Modifier = Modifier
 ) {
     // State Variable
-    var needAnAccess by remember { viewModel.needAnAccess }
-    var isLoading by remember { viewModel.isLoading }
+    val needAnAccess by remember { viewModel.needAnAccess }
+    val isLoading by remember { viewModel.isLoading }
     val navController = rememberNavController()
 
     // Loading Screen
@@ -202,9 +205,9 @@ private fun NavigationDrawerContent(
                             saveState = true
                         }
                         // Avoid multiple copies of the same destination when
-                        // reselecting the same item
+                        // reelecting the same item
                         launchSingleTop = true
-                        // Restore state when reselecting a previously selected item
+                        // Restore state when reelecting a previously selected item
                         restoreState = true
                     }
                     onNavigate(screen)
@@ -258,7 +261,7 @@ fun AppCompactWidthNavigation(
             navController = navController,
             modifier = modifier,
             onTitleChanged = {
-                currentScreenTitle = it;
+                currentScreenTitle = it
             },
             onCanNavigateBackChanged = {
                 canNavigateBack = it
@@ -331,9 +334,9 @@ fun BottomBar(
                             saveState = true
                         }
                         // Avoid multiple copies of the same destination when
-                        // reselecting the same item
+                        // reelecting the same item
                         launchSingleTop = true
-                        // Restore state when reselecting a previously selected item
+                        // Restore state when reelecting a previously selected item
                         restoreState = true
                     }
                     onNavigate(screen)
@@ -360,7 +363,7 @@ fun TopBar(
                 IconButton(onClick = navigateBack) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "RETOUR"
+                        contentDescription = "back"
                     )
                 }
             }
