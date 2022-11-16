@@ -4,7 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
 import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
@@ -23,15 +25,21 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.succiue.myapplication.LoginActivity
 import com.succiue.myapplication.MainActivity
-import com.succiue.myapplication.data.model.User
+import com.succiue.myapplication.data.model.UserModel
+import com.succiue.myapplication.utils.Constant
 import com.succiue.myapplication.utils.multipleNonNull
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
 
+
+data class LoginUiState(
+    var loading: Boolean = false,
+    var loginEnable: Boolean = true
+)
+
 class LoginViewModel(loginActivity: Activity) : ViewModel() {
     //Initialized once
-    private var privateWebClientId =
-        "473823468553-12tebj7jftchaasckr19oveqd8fsos1o.apps.googleusercontent.com"
+    private var privateWebClientId = Constant.WEB_CLIENT_ID
     private var loginActivity = loginActivity
 
     //New values
@@ -43,7 +51,6 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
         var RC_SIGN_IN = 3
         var REQ_ONE_TAP = 2
     }
-    // Can be any integer unique to the Activity
 
     //Firebase Final Auth
     private lateinit var auth: FirebaseAuth
@@ -51,8 +58,9 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
     // Old necessities
     private lateinit var mGoogleSignInClient: GoogleSignInClient
 
-    val loginEnable = mutableStateOf(true)
 
+    var uiState by mutableStateOf(LoginUiState())
+        private set
 
     /**
      * idToken can be given by the FirebaseUser if google server has the amiability to respond
@@ -85,49 +93,48 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
             .setGoogleIdTokenRequestOptions(
                 BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
                     .setSupported(true)
-                    // Your server's client ID, not your Android client ID.
                     .setServerClientId(privateWebClientId)
-                    // Only show accounts previously used to sign in.
                     .setFilterByAuthorizedAccounts(false)
                     .build()
             )
             .build()
+
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(privateWebClientId)
             .requestEmail()
             .build()
-        mGoogleSignInClient = GoogleSignIn.getClient(loginActivity, gso);
+
+        mGoogleSignInClient = GoogleSignIn.getClient(loginActivity, gso)
     }
 
     /**
      * Function Called on UserIntent
      */
     fun login() {
-        //logWithOneTapAndMightWellBeAnMFFailure()
-        loginSigninOldMethodButAlwaysMFWork()
+        // Remove Tap Methode Because cannot test it on Emulator, has to be done with real device
+        //loginNewMethod()
+        loginOldMethod()
     }
 
     fun logout() {
+
+        // Disconnect and remove any trace of user
         try {
             Firebase.auth.signOut()
-            mGoogleSignInClient.signOut();
-            loginEnable.value = true;
+            mGoogleSignInClient.signOut()
+            uiState.loginEnable = true
         } catch (e: Exception) {
-            Log.d("GOOGLEAUTH", e.localizedMessage)
+            Log.d("LoginViewModel", e.localizedMessage)
         }
 
+        // Launch a new activity and finish loginActivity
 
-        // If b is not null
         viewModelScope.launch {
-
 
             // Choose which screen to launch
             val toLaunch = LoginActivity::class.java
-
             // Create intent for Activity
             val intent = Intent(loginActivity, toLaunch)
-
-
             //Start new activity and quit this one
             loginActivity.startActivity(intent)
             loginActivity.finish()
@@ -138,11 +145,11 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
     }
 
 
-    suspend fun issThereAnyPerson(user: FirebaseUser): User? {
+    suspend fun issThereAnyPerson(user: FirebaseUser): UserModel? {
         //if there is no FirebaseUser saved in mobile, don't need to dp that
         if (user != null) {
             // Generate all the info if FirebaseUser is found
-            val def = CompletableDeferred<User?>()
+            val def = CompletableDeferred<UserModel?>()
             user?.getIdToken(true)?.addOnSuccessListener {
                 it.token?.let { token ->
                     idToken = token
@@ -150,7 +157,7 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
                     uId = user?.uid
                     email = user?.email
                     multipleNonNull(uId, displayName, email, idToken) { id, displayN, mail, idTkn ->
-                        def.complete(User(id, displayN, mail, idTkn))
+                        def.complete(UserModel(id, displayN, mail, idTkn))
                     }
                 }
             }?.addOnFailureListener {
@@ -164,18 +171,33 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
         }
     }
 
-    fun isThereAnyPerson() {
+    /**
+     * Function to auto-connect
+     */
+    fun autoLogin() {
+        // Get an instance of Firebase User
         val user = Firebase.auth.currentUser
-        if (user != null) {
-            var idToken = user.getIdToken(false)
-            Log.d("GOOGLEAUTH", "I GOT IDTOKEN " + idToken.result.token)
-            loginEnable.value = false
+        user?.let { myLastAccount ->
+            // Get token from user
+            uiState.loading = true
+            myLastAccount.getIdToken(true).addOnSuccessListener { result ->
+                val idToken = result.token
+                Log.d("LoginViewModel", "GetTokenResult result = $idToken")
+                uiState.loginEnable = false
+                uiState.loading = false
+            }.addOnFailureListener { error ->
+                Log.d("LoginViewModel", "An error occurred= ${error.localizedMessage}")
+            }
+        } ?: run {
+            Log.d("LoginViewModel", "No previous user found")
+            uiState.loginEnable = true
+            uiState.loading = false
         }
     }
 
     fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
-            RC_SIGN_IN -> {
+            Constant.CODE_GOOGLE_RC_SIGN_IN -> {
                 try {
                     val task: Task<GoogleSignInAccount> =
                         GoogleSignIn.getSignedInAccountFromIntent(data)
@@ -184,7 +206,7 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
                     Log.d("GOOGLEAUTH", e.localizedMessage)
                 }
             }
-            REQ_ONE_TAP -> {
+            Constant.CODE_GOOGLE_REQ_ONE_TAP -> {
                 try {
                     val credential = oneTapClient.getSignInCredentialFromIntent(data)
                     val idToken = credential.googleIdToken
@@ -213,7 +235,7 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
                     if (task.isSuccessful) {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d("GOOGLEAUTH", "signInWithCredential:success")
-                        loginEnable.value = false
+                        uiState.loginEnable = false
 
                         Firebase.auth.currentUser?.let {
                             // If b is not null
@@ -254,19 +276,17 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
         }
     }
 
-    private fun loginSigninOldMethodButAlwaysMFWork() {
-        val signInIntent = mGoogleSignInClient.signInIntent
-        loginActivity.startActivityForResult(signInIntent, RC_SIGN_IN)
-
+    private fun loginOldMethod() {
+        loginActivity.startActivityForResult(mGoogleSignInClient.signInIntent, RC_SIGN_IN)
     }
 
 
     /**
      * First Implementation of OneTap
-     * As A cool Google function, never work on emulator
+     * As a cool Google function, never work on emulator
      * https://medium.com/firebase-developers/how-to-authenticate-to-firebase-using-google-one-tap-in-jetpack-compose-60b30e621d0d
      */
-    private fun logWithOneTapAndMightWellBeAnMFFailure() {
+    private fun loginNewMethod() {
         oneTapClient.beginSignIn(signInRequest)
             .addOnSuccessListener(loginActivity) { result ->
                 try {
@@ -275,15 +295,15 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
                         null, 0, 0, 0, null
                     )
                 } catch (e: IntentSender.SendIntentException) {
-                    Log.e("GOOGLEAUTH", "Couldn't start One Tap UI: ${e.localizedMessage}")
-                    loginSigninOldMethodButAlwaysMFWork()
+                    Log.e("LoginViewModel", "Couldn't start One Tap UI: ${e.localizedMessage}")
+                    loginOldMethod()
                 }
             }
             .addOnFailureListener(loginActivity) { e ->
                 // No saved credentials found. Launch the One Tap sign-up flow, or
                 // do nothing and continue presenting the signed-out UI.
-                Log.d("GOOGLEAUTH", e.localizedMessage)
-                loginSigninOldMethodButAlwaysMFWork()
+                Log.d("LoginViewModel", e.localizedMessage)
+                loginOldMethod()
             }
     }
 

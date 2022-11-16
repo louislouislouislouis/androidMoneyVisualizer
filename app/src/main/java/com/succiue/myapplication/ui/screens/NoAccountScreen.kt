@@ -8,10 +8,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.succiue.myapplication.R
-import com.succiue.myapplication.ui.viewmodels.MainViewController
+import com.succiue.myapplication.ui.viewmodels.MainViewModel
 
 @Composable
-fun NoAccountScreen(viewModel: MainViewController) {
+fun NoAccountScreen(viewModel: MainViewModel) {
     val ctx = LocalContext.current
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

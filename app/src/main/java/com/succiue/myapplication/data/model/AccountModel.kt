@@ -13,7 +13,7 @@ import com.plaid.link.linkTokenConfiguration
 import org.json.JSONObject
 
 
-class Account(var owner: User) {
+class AccountModel(var owner: UserModel) {
     var id: String = ""
 
     fun getPublicToken(

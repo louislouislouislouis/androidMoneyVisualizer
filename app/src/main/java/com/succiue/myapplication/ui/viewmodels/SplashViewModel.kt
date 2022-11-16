@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.succiue.myapplication.data.model.User
+import com.succiue.myapplication.data.model.UserModel
 import com.succiue.myapplication.utils.multipleNonNull
 import kotlinx.coroutines.CompletableDeferred
 
@@ -37,11 +37,11 @@ class SplashViewModel : ViewModel() {
     private var email: String? = null
 
 
-    suspend fun isThereAnyPerson(): User? {
+    suspend fun isThereAnyPerson(): UserModel? {
         //if there is no FirebaseUser saved in mobile, don't need to dp that
         if (user != null) {
             // Generate all the info if FirebaseUser is found
-            val def = CompletableDeferred<User?>()
+            val def = CompletableDeferred<UserModel?>()
             user?.getIdToken(true)?.addOnSuccessListener {
                 it.token?.let { token ->
                     idToken = token
@@ -49,7 +49,7 @@ class SplashViewModel : ViewModel() {
                     uId = user?.uid
                     email = user?.email
                     multipleNonNull(uId, displayName, email, idToken) { id, displayN, mail, idTkn ->
-                        def.complete(User(id, displayN, mail, idTkn))
+                        def.complete(UserModel(id, displayN, mail, idTkn))
                     }
                 }
             }?.addOnFailureListener {

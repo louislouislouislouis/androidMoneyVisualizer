@@ -5,19 +5,53 @@ import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.plaid.link.configuration.LinkTokenConfiguration
 import com.plaid.link.result.LinkSuccess
-import com.succiue.myapplication.data.model.Account
-import com.succiue.myapplication.data.model.User
+import com.succiue.myapplication.MoneyApp
+import com.succiue.myapplication.data.model.AccountModel
+import com.succiue.myapplication.data.model.UserModel
+import com.succiue.myapplication.data.repository.AccountRepository
 import com.succiue.myapplication.utils.sendRequest
 
+/*
+class MyViewModelFactory(application: Application, param: UserModel) :
+    ViewModelProvider.Factory {
+    private val mApplication: Application
+    private val user: UserModel
 
-class MainViewController(var user: User) : ViewModel() {
+    init {
+        mApplication = application
+        user = param
+    }
+
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        return MainViewModel(mApplication, user) as T
+    }
+}*/
+
+class MainViewModel(
+    var user: UserModel,
+    private val accountRepository: AccountRepository
+) : ViewModel() {
+
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val app = (this[APPLICATION_KEY] as MoneyApp)
+                val gameRpo = app.container.accountRepository
+                MainViewModel(UserModel("test", "ee", "ee", "ee"), gameRpo)
+            }
+        }
+    }
 
     var isLoading = mutableStateOf<Boolean>(true)
     var needAnAccess = mutableStateOf<Boolean>(true)
 
-    private val account: Account = Account(user)
+    private val account: AccountModel = AccountModel(user)
     val publicToken = mutableStateOf("")
     val accessToken = mutableStateOf("")
     val linkToken = mutableStateOf("")
@@ -85,7 +119,7 @@ class MainViewController(var user: User) : ViewModel() {
             },
             onFailure = { error ->
                 error?.let {
-                    Log.d("ACCOUNT", error.localizedMessage)
+                    Log.d("ACCOUNT", it.localizedMessage)
                 }
                 isLoading.value = false;
             },

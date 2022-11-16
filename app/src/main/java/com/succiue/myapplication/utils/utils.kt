@@ -7,7 +7,7 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
-import com.succiue.myapplication.data.model.User
+import com.succiue.myapplication.data.model.UserModel
 import org.json.JSONObject
 import java.io.Serializable
 
@@ -43,7 +43,7 @@ fun sendRequest(
     method: Int = Request.Method.GET,
     onSuccess: Response.Listener<org.json.JSONObject>,
     onFailure: Response.ErrorListener,
-    owner: User,
+    owner: UserModel,
     body: JSONObject? = null,
 ) {
     // in the below line, we are creating a variable for url.
@@ -71,4 +71,14 @@ fun sendRequest(
     // below line is to make
     // a json object request.
     queue.add(jsonObjectRequest)
+}
+
+object Constant {
+    const val WEB_CLIENT_ID =
+        "473823468553-12tebj7jftchaasckr19oveqd8fsos1o.apps.googleusercontent.com"
+    const val TABLE_USER_ATTRIBUTE_DATA = "data"
+
+    const val CODE_GOOGLE_RC_SIGN_IN = 3
+    const val CODE_GOOGLE_REQ_ONE_TAP = 2
+
 }

@@ -32,7 +32,7 @@ import com.succiue.myapplication.ui.screens.bodies.HomeBody
 import com.succiue.myapplication.ui.screens.bodies.ProfileBody
 import com.succiue.myapplication.ui.screens.bodies.StatsBody
 import com.succiue.myapplication.ui.viewmodels.LoginViewModel
-import com.succiue.myapplication.ui.viewmodels.MainViewController
+import com.succiue.myapplication.ui.viewmodels.MainViewModel
 
 sealed class Screen(
     val route: String,
@@ -56,11 +56,12 @@ val MainScreens = listOf(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoneyVisualizerHome(
-    viewModel: MainViewController,
+    viewModel: MainViewModel,
     loginViewModel: LoginViewModel,
     windowsSize: WindowSizeClass,
     modifier: Modifier = Modifier
 ) {
+
     // State Variable
     val needAnAccess by remember { viewModel.needAnAccess }
     val isLoading by remember { viewModel.isLoading }
@@ -126,7 +127,7 @@ fun MoneyVisualizerHome(
 fun AppExpandedWidthNavigation(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    viewModel: MainViewController,
+    viewModel: MainViewModel,
     loginViewModel: LoginViewModel
 ) {
     val navigationDrawerContentDescription = "TEST"
@@ -226,7 +227,7 @@ private fun NavigationDrawerContent(
 fun AppCompactWidthNavigation(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    viewModel: MainViewController,
+    viewModel: MainViewModel,
     loginViewModel: LoginViewModel
 ) {
 
@@ -283,7 +284,7 @@ fun AppBody(
     navController: NavHostController,
     onTitleChanged: (Int) -> Unit,
     onCanNavigateBackChanged: (Boolean) -> Unit,
-    viewModel: MainViewController,
+    viewModel: MainViewModel,
     loginViewModel: LoginViewModel
 ) {
     NavHost(

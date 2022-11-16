@@ -10,12 +10,13 @@ import com.succiue.myapplication.ui.viewmodels.LoginViewModel
 
 @Composable
 fun ProfileBody(navController: NavHostController, viewModel: LoginViewModel) {
+    val uiState = viewModel.uiState
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
         Button(
-            enabled = !viewModel.loginEnable.value,
+            enabled = !uiState.loginEnable,
             onClick = { viewModel.logout() })
         {
             Text(text = "Logout")
