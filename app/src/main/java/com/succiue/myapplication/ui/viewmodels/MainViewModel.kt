@@ -6,9 +6,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.plaid.link.configuration.LinkTokenConfiguration
 import com.plaid.link.result.LinkSuccess
 import com.succiue.myapplication.MoneyApp
@@ -17,36 +14,18 @@ import com.succiue.myapplication.data.model.UserModel
 import com.succiue.myapplication.data.repository.AccountRepository
 import com.succiue.myapplication.utils.sendRequest
 
-/*
-class MyViewModelFactory(application: Application, param: UserModel) :
-    ViewModelProvider.Factory {
-    private val mApplication: Application
-    private val user: UserModel
-
-    init {
-        mApplication = application
-        user = param
-    }
-
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return MainViewModel(mApplication, user) as T
-    }
-}*/
+class ExtraParamsViewModelFactory(
+    private val application: MoneyApp,
+    private val myExtraUser: UserModel
+) : ViewModelProvider.NewInstanceFactory() {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T =
+        MainViewModel(user = myExtraUser, application.container.accountRepository) as T
+}
 
 class MainViewModel(
     var user: UserModel,
     private val accountRepository: AccountRepository
 ) : ViewModel() {
-
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val app = (this[APPLICATION_KEY] as MoneyApp)
-                val gameRpo = app.container.accountRepository
-                MainViewModel(UserModel("test", "ee", "ee", "ee"), gameRpo)
-            }
-        }
-    }
 
     var isLoading = mutableStateOf<Boolean>(true)
     var needAnAccess = mutableStateOf<Boolean>(true)

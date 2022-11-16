@@ -2,12 +2,12 @@ package com.succiue.myapplication
 
 
 //import com.succiue.myapplication.ui.viewmodels.MyViewModelFactory
-import AccountOnlineSource
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -17,9 +17,9 @@ import com.plaid.link.OpenPlaidLink
 import com.plaid.link.result.LinkExit
 import com.plaid.link.result.LinkSuccess
 import com.succiue.myapplication.data.model.UserModel
-import com.succiue.myapplication.data.repository.DefaultAccountRepository
 import com.succiue.myapplication.ui.screens.MoneyVisualizerHome
 import com.succiue.myapplication.ui.theme.MyApplicationTheme
+import com.succiue.myapplication.ui.viewmodels.ExtraParamsViewModelFactory
 import com.succiue.myapplication.ui.viewmodels.LoginViewModel
 import com.succiue.myapplication.ui.viewmodels.MainViewModel
 import com.succiue.myapplication.utils.getSerializable
@@ -43,7 +43,9 @@ class MainActivity : ComponentActivity() {
     /**
      * The mainViewModel of our App
      */
-    private lateinit var mainAppViewModel: MainViewModel
+    private val mainAppViewModel: MainViewModel by viewModels {
+        ExtraParamsViewModelFactory(application as MoneyApp, user)
+    }
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,16 +53,7 @@ class MainActivity : ComponentActivity() {
 
         // Get user variable
         user = intent.getSerializable("user", UserModel::class.java)
-
-        //Create VM with user
-        mainAppViewModel = MainViewModel(
-            user,
-            accountRepository = DefaultAccountRepository(AccountOnlineSource)
-        )
-        //val mainAppViewModel: MainViewModel
-        //val mainAppViewModel2: MainViewModel by viewModels { MyViewModelFactory(application, user) }
-        //mainAppViewModel = mainAppViewModel2
-        // Create an ActivityLauncher for connect Account and give it to controller
+        Log.d("MainActivity", mainAppViewModel.user.toString())
         val linkAccountToPlaid =
             registerForActivityResult(OpenPlaidLink()) {
                 when (it) {

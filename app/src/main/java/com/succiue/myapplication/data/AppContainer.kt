@@ -1,5 +1,6 @@
 package com.succiue.myapplication.data
 
+import AccountOnlineSource
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.succiue.myapplication.data.repository.AccountRepository
@@ -28,9 +29,11 @@ class DefaultAppContainer : AppContainer {
             .build()
     }
 
-    override val accountSource: AccountSource
-        get() = TODO("Not yet implemented")
+    //override val accountSource: AccountSource
 
+    override val accountSource: AccountSource by lazy {
+        AccountOnlineSource
+    }
     override val accountRepository: AccountRepository by lazy {
         DefaultAccountRepository(accountSource)
     }
