@@ -1,5 +1,7 @@
 package com.succiue.myapplication.ui.screens
 
+import android.content.Context
+import android.content.ContextWrapper
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -26,6 +28,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.succiue.myapplication.MainActivity
 import com.succiue.myapplication.R
 import com.succiue.myapplication.ui.screens.bodies.GoalsBody
 import com.succiue.myapplication.ui.screens.bodies.HomeBody
@@ -52,6 +55,11 @@ val MainScreens = listOf(
     Screen.Profile,
 )
 
+fun Context.findActivity(): MainActivity? = when (this) {
+    is MainActivity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,64 +67,68 @@ fun MoneyVisualizerHome(
     viewModel: MainViewModel,
     loginViewModel: LoginViewModel,
     windowsSize: WindowSizeClass,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
 
     // State Variable
-    val needAnAccess by remember { viewModel.needAnAccess }
-    val isLoading by remember { viewModel.isLoading }
+    var uiState = viewModel.uiState
     val navController = rememberNavController()
 
     // Loading Screen
-    if (isLoading) {
-        LoadingScreen()
-        return
+    if (uiState.loading) {
+        Text(text = uiState.loading.toString())
+
+    } else {
+        if (uiState.needAnAccess) {
+            Text(text = uiState.needAnAccess.toString())
+            NoAccountScreen(viewModel)
+
+        } else {
+
+            /*
+               * Show Normal Screen Only if no loading or don't need Connect bank
+               *
+             */
+            when (windowsSize.widthSizeClass) {
+                WindowWidthSizeClass.Compact -> {
+                    AppCompactWidthNavigation(
+                        modifier,
+                        navController = navController,
+                        viewModel = viewModel,
+                        loginViewModel = loginViewModel
+                    )
+                }
+                WindowWidthSizeClass.Medium -> {
+                    AppCompactWidthNavigation(
+                        modifier,
+                        navController = navController,
+                        viewModel = viewModel,
+                        loginViewModel = loginViewModel
+                    )
+                }
+                WindowWidthSizeClass.Expanded -> {
+                    AppExpandedWidthNavigation(
+                        modifier,
+                        navController = navController,
+                        viewModel = viewModel,
+                        loginViewModel = loginViewModel
+                    )
+                }
+                else -> {
+                    AppCompactWidthNavigation(
+                        modifier,
+                        navController = navController,
+                        viewModel = viewModel,
+                        loginViewModel = loginViewModel
+                    )
+                }
+            }
+        }
     }
 
     // Connect Account Screen
-    if (needAnAccess) {
-        NoAccountScreen(viewModel)
-        return
-    }
 
-    /*
-       * Show Normal Screen Only if no loading or don't need Connect bank
-       *
-     */
-    when (windowsSize.widthSizeClass) {
-        WindowWidthSizeClass.Compact -> {
-            AppCompactWidthNavigation(
-                modifier,
-                navController = navController,
-                viewModel = viewModel,
-                loginViewModel = loginViewModel
-            )
-        }
-        WindowWidthSizeClass.Medium -> {
-            AppCompactWidthNavigation(
-                modifier,
-                navController = navController,
-                viewModel = viewModel,
-                loginViewModel = loginViewModel
-            )
-        }
-        WindowWidthSizeClass.Expanded -> {
-            AppExpandedWidthNavigation(
-                modifier,
-                navController = navController,
-                viewModel = viewModel,
-                loginViewModel = loginViewModel
-            )
-        }
-        else -> {
-            AppCompactWidthNavigation(
-                modifier,
-                navController = navController,
-                viewModel = viewModel,
-                loginViewModel = loginViewModel
-            )
-        }
-    }
+
 }
 
 

@@ -3,27 +3,37 @@ package com.succiue.myapplication.ui.viewmodels
 import android.content.Context
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.plaid.link.configuration.LinkTokenConfiguration
 import com.plaid.link.result.LinkSuccess
 import com.succiue.myapplication.MoneyApp
 import com.succiue.myapplication.data.model.AccountModel
+import com.succiue.myapplication.data.model.BankUserModel
+import com.succiue.myapplication.data.model.KichtaUserModel
 import com.succiue.myapplication.data.model.UserModel
-import com.succiue.myapplication.data.repository.AccountRepository
-import com.succiue.myapplication.utils.sendRequest
+import com.succiue.myapplication.data.repository.UserRepository
+import kotlinx.coroutines.launch
 
+data class MainUiState(
+    val loading: Boolean = false,
+    val needAnAccess: Boolean = true
+)
 
 class MainViewModel(
-    var user: UserModel,
-    private val accountRepository: AccountRepository
+    var user: KichtaUserModel,
+    private val userRepo: UserRepository
 ) : ViewModel() {
 
-    var isLoading = mutableStateOf<Boolean>(true)
-    var needAnAccess = mutableStateOf<Boolean>(true)
+    var uiState by mutableStateOf(MainUiState(loading = false, needAnAccess = true))
+        private set
 
-    private val account: AccountModel = AccountModel(user)
+
+    private val account: AccountModel = AccountModel(UserModel("e", "e", "e", "e"))
     val publicToken = mutableStateOf("")
     val accessToken = mutableStateOf("")
     val linkToken = mutableStateOf("")
@@ -38,7 +48,7 @@ class MainViewModel(
         // Send public_token to your server, exchange for access_token
         var publicTokenValue = res.publicToken
         publicToken.value = publicTokenValue
-        account?.getAccessToken(ctx, accessToken, publicTokenValue, needAnAccess)
+        //account?.getAccessToken(ctx, accessToken, publicTokenValue, uiState.needAnAccess)
     }
 
     /**
@@ -61,41 +71,32 @@ class MainViewModel(
      * Not User Intent
      * This function is the OnSuccess of the Activity Launched by Plaid DSK
      */
-    fun getAccessToken(ctx: Context) {
-        isLoading.value = true;
-        sendRequest(
-            ctx,
-            "https://bankbackuqac.herokuapp.com/bank/getAccessToken",
-            com.android.volley.Request.Method.POST,
-            onSuccess = { response ->
-                var accessToken: String
-                try {
-                    try {
-                        accessToken = response.get("accessToken") as String
-                        Log.d("ACCOUNT", accessToken)
-                        needAnAccess.value = false
-                    } catch (e: Exception) {
-                        var test = response.get("accessToken") as Boolean
-                        Log.d("ACCOUNTTT", e.localizedMessage)
-                        needAnAccess.value = true
-                    }
-
-                } catch (e: Exception) {
-                    Log.d("ACCOUNT-333", e.localizedMessage)
-                    needAnAccess.value = true
+    fun getAccessToken() {
+        uiState = uiState.copy(loading = true);
+        viewModelScope.launch {
+            Log.d("MainViewModel", "HOOO")
+            var bankUser: BankUserModel? = null
+            try {
+                bankUser = userRepo.getUser()
+                Log.d("MainViewModel", "Bank user : $bankUser")
+            } catch (e: Exception) {
+                e.localizedMessage?.let {
+                    Log.d("MainViewModel", it)
+                } ?: run {
+                    Log.d("MainViewModel", "Undefined Error")
                 }
-                isLoading.value = false;
+                uiState = uiState.copy(needAnAccess = true);
+            }
 
-
-            },
-            onFailure = { error ->
-                error?.let {
-                    Log.d("ACCOUNT", it.localizedMessage)
-                }
-                isLoading.value = false;
-            },
-            owner = user
-        )
+            bankUser?.let {
+                uiState = uiState.copy(needAnAccess = false);
+            } ?: run {
+                uiState = uiState.copy(needAnAccess = true);
+                Log.d("MainViewModel", "Cannot get BankUser")
+            }
+            uiState = uiState.copy(loading = false);
+            Log.d("MainViewModel", "${uiState.loading}")
+        }
     }
 }
 
@@ -104,9 +105,9 @@ class MainViewModel(
  */
 class ExtraParamsMainViewModelFactory(
     private val application: MoneyApp,
-    private val myExtraUser: UserModel
+    private val myExtraUser: KichtaUserModel
 ) : ViewModelProvider.NewInstanceFactory() {
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        MainViewModel(user = myExtraUser, application.container.accountRepository) as T
+        application.container.userRepository?.let { MainViewModel(user = myExtraUser, it) } as T
 }
 

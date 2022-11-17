@@ -1,16 +1,23 @@
 package com.succiue.myapplication.data.repository
 
-import com.succiue.myapplication.data.model.UserModel
-import com.succiue.myapplication.data.sources.UserSource
+import com.succiue.myapplication.data.model.BankUserModel
+import com.succiue.myapplication.data.model.KichtaUserModel
+import com.succiue.myapplication.data.sources.UserOnlineSource
 
 
 interface UserRepository {
-    suspend fun getUser(): UserModel
+    val kichtaUser: KichtaUserModel
+    suspend fun getUser(): BankUserModel
 }
 
-class DefaultUserRepository(private val userSource: UserSource) : UserRepository {
+class DefaultUserRepository(
+    kichtaUser: KichtaUserModel,
+) : UserRepository {
 
-    override suspend fun getUser(): UserModel {
+    private val userSource = UserOnlineSource(kichtaUser)
+    override val kichtaUser: KichtaUserModel = kichtaUser
+
+    override suspend fun getUser(): BankUserModel {
         return userSource.getUser()
     }
 }

@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.succiue.myapplication.data.model.UserModel
+import com.succiue.myapplication.data.model.KichtaUserModel
 import com.succiue.myapplication.utils.multipleNonNull
 import kotlinx.coroutines.CompletableDeferred
 
@@ -16,45 +16,36 @@ class SplashViewModel : ViewModel() {
      */
     private val user: FirebaseUser? = Firebase.auth.currentUser
 
-    /**
-     * idToken can be given by the FirebaseUser if google server has the amiability to respond
-     */
-    private var idToken: String? = null
-
-    /**
-     * uId can be given by the FirebaseUser if google server has the amiability to respond
-     */
-    private var uId: String? = null
-
-    /**
-     * displayName can be given by the FirebaseUser if google server has the amiability to respond
-     */
-    private var displayName: String? = null
-
-    /**
-     * email can be given by the FirebaseUser if google server has the amiability to respond
-     */
-    private var email: String? = null
-
-
-    suspend fun isThereAnyPerson(): UserModel? {
+    suspend fun googleAutoLogin(): KichtaUserModel? {
         //if there is no FirebaseUser saved in mobile, don't need to dp that
         if (user != null) {
             // Generate all the info if FirebaseUser is found
-            val def = CompletableDeferred<UserModel?>()
-            user?.getIdToken(true)?.addOnSuccessListener {
-                it.token?.let { token ->
-                    idToken = token
-                    displayName = user?.displayName
-                    uId = user?.uid
-                    email = user?.email
-                    multipleNonNull(uId, displayName, email, idToken) { id, displayN, mail, idTkn ->
-                        def.complete(UserModel(id, displayN, mail, idTkn))
+            val def = CompletableDeferred<KichtaUserModel?>()
+            user?.getIdToken(true)?.addOnSuccessListener { tokenResult ->
+                tokenResult.token?.let { token ->
+                    val displayName = user?.displayName
+                    val idKichta = user?.uid
+                    val email = user?.email
+
+                    multipleNonNull(
+                        idKichta,
+                        displayName,
+                        email,
+                        token
+                    ) { id, displayN, mail, idTkn ->
+                        def.complete(
+                            KichtaUserModel(
+                                idKichta = id,
+                                displayName = displayN,
+                                email = mail,
+                                idToken = idTkn
+                            )
+                        )
                     }
                 }
             }?.addOnFailureListener {
                 // If Google server does not want to respond
-                Log.d("GOOGLEAUTH", it.localizedMessage)
+                Log.d("SplashViewModel", it.localizedMessage)
                 def.complete(null)
             }
             return def.await()

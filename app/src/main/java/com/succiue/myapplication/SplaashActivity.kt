@@ -2,26 +2,20 @@ package com.succiue.myapplication
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Icon
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
+import com.succiue.myapplication.ui.screens.SplashScreen
 import com.succiue.myapplication.ui.theme.MyApplicationTheme
 import com.succiue.myapplication.ui.viewmodels.SplashViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class SplashActivity : ComponentActivity() {
+class SplaashActivity : ComponentActivity() {
 
     /**
      * Minimum Time in microseconds where the SplashScreen as to be shown
@@ -42,16 +36,18 @@ class SplashActivity : ComponentActivity() {
         lifecycleScope.launch {
 
             //Suspend function, lock the execution of the next code
-            val user = viewModel.isThereAnyPerson()
+            val kichtaUser = viewModel.googleAutoLogin()
 
             // Choose which screen to launch
-            val toLaunch = if (user == null) LoginActivity::class.java else MainActivity::class.java
+            val toLaunch =
+                if (kichtaUser == null) LoginActivity::class.java else MainActivity::class.java
 
+            Log.d("Splaash Activity", "To Launch = $toLaunch")
             // Create intent for Activity
-            val intent = Intent(this@SplashActivity, toLaunch)
+            val intent = Intent(this@SplaashActivity, toLaunch)
 
             // Add user as a parameter (only used in MainScreen)
-            intent.putExtra("user", user)
+            intent.putExtra("user", kichtaUser)
 
             //Add additional delay if too quick
             delay(minimumTime - (System.currentTimeMillis() - startTime))
@@ -68,29 +64,9 @@ class SplashActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.logo_app_mobile),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 100.dp),
-                        tint = Color.Unspecified
-                    )
+                    SplashScreen()
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    MyApplicationTheme {
-        Greeting("Android")
     }
 }

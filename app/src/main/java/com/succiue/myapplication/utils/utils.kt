@@ -7,7 +7,7 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
-import com.succiue.myapplication.data.model.UserModel
+import com.succiue.myapplication.data.model.KichtaUserModel
 import org.json.JSONObject
 import java.io.Serializable
 
@@ -43,7 +43,7 @@ fun sendRequest(
     method: Int = Request.Method.GET,
     onSuccess: Response.Listener<org.json.JSONObject>,
     onFailure: Response.ErrorListener,
-    owner: UserModel,
+    owner: KichtaUserModel,
     body: JSONObject? = null,
 ) {
     // in the below line, we are creating a variable for url.
@@ -80,5 +80,6 @@ object Constant {
 
     const val CODE_GOOGLE_RC_SIGN_IN = 3
     const val CODE_GOOGLE_REQ_ONE_TAP = 2
+    const val URL_BANK = "https://bankbackuqac.herokuapp.com/"
 
 }

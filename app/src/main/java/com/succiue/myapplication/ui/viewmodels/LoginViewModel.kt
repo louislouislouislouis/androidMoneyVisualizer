@@ -333,7 +333,12 @@ class ExtraParamsLoginViewModelFactory(
     private val loginActivity: Activity
 ) : ViewModelProvider.NewInstanceFactory() {
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        LoginViewModel(loginActivity = loginActivity, application.container.userRepository) as T
+        application.container.userRepository?.let {
+            LoginViewModel(
+                loginActivity = loginActivity,
+                it
+            )
+        } as T
 }
 
 

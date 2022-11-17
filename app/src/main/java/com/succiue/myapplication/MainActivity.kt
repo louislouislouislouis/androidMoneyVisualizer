@@ -11,10 +11,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.lifecycleScope
 import com.plaid.link.OpenPlaidLink
 import com.plaid.link.result.LinkExit
 import com.plaid.link.result.LinkSuccess
-import com.succiue.myapplication.data.model.UserModel
+import com.succiue.myapplication.data.model.KichtaUserModel
 import com.succiue.myapplication.ui.screens.MoneyVisualizerHome
 import com.succiue.myapplication.ui.theme.MyApplicationTheme
 import com.succiue.myapplication.ui.viewmodels.ExtraParamsLoginViewModelFactory
@@ -22,6 +23,7 @@ import com.succiue.myapplication.ui.viewmodels.ExtraParamsMainViewModelFactory
 import com.succiue.myapplication.ui.viewmodels.LoginViewModel
 import com.succiue.myapplication.ui.viewmodels.MainViewModel
 import com.succiue.myapplication.utils.getSerializable
+import kotlinx.coroutines.launch
 
 /**
  * This Class has to be called with an User
@@ -29,10 +31,12 @@ import com.succiue.myapplication.utils.getSerializable
  */
 class MainActivity : ComponentActivity() {
 
+
     /**
      * Our current User Connected
      */
-    private lateinit var user: UserModel
+    private lateinit var user: KichtaUserModel
+
 
     /**
      * The loginViewModel of our App
@@ -54,11 +58,14 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        val app = application as MoneyApp
 
         // Get user variable
-        user = intent.getSerializable("user", UserModel::class.java)
-        Log.d("MainActivity", mainAppViewModel.user.toString())
+        user = intent.getSerializable("user", KichtaUserModel::class.java)
+        app.container.setUser(user)
+        Log.d("MainActivity", "Current KichtaUser is : " + mainAppViewModel.user.toString())
+
+        // Define action for activity of Plaid API
         val linkAccountToPlaid =
             registerForActivityResult(OpenPlaidLink()) {
                 when (it) {
@@ -77,7 +84,12 @@ class MainActivity : ComponentActivity() {
         loginViewModel.initViewModel(this)
 
         // Get AccessToken
-        peekAvailableContext()?.let { mainAppViewModel.getAccessToken(it) }
+        peekAvailableContext()?.let {
+            Log.d("EEE", "EEEE")
+            lifecycleScope.launch {
+                mainAppViewModel.getAccessToken()
+            }
+        }
 
         setContent {
             MyApplicationTheme {
