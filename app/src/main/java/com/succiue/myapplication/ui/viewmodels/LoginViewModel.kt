@@ -121,6 +121,10 @@ class LoginViewModel(
      * Function Called on UserIntent
      */
     fun test() {
+        viewModelScope.launch {
+            val user = userRepository.getUser()
+            Log.d("LoginViewModel", user.toString())
+        }
 
     }
 

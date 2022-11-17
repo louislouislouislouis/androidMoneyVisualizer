@@ -17,10 +17,6 @@ import com.succiue.myapplication.ui.viewmodels.LoginViewModel
 class LoginActivity : ComponentActivity() {
 
     /**
-     * View Model for A Login Activity
-     */
-    //private var loginViewModel = LoginViewModel(this)
-    /**
      * The loginViewModel of our App
      */
     private val loginViewModel: LoginViewModel by viewModels {

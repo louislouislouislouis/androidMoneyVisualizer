@@ -9,6 +9,7 @@ interface UserRepository {
 }
 
 class DefaultUserRepository(private val userSource: UserSource) : UserRepository {
+
     override suspend fun getUser(): UserModel {
         return userSource.getUser()
     }
