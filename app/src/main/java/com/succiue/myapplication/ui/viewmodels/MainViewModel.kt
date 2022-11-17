@@ -31,11 +31,18 @@ class MainViewModel(
     private val bankRepo: BankRepository
 ) : ViewModel() {
 
+    fun getBalanceInfoFrom() {
+        viewModelScope.launch {
+            val accountInfo = userRepo.getBalance()
+            Log.d("MainViewModel", "Voila les balance$accountInfo")
+        }
+    }
+
     var uiState by mutableStateOf(MainUiState(loading = false, needAnAccess = true))
         private set
 
     var credentialsBank = BankCredentialsModel()
-    
+
     /**
      * The launcher has to be initialized by the activity
      */

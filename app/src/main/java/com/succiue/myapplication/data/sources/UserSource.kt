@@ -3,6 +3,7 @@ package com.succiue.myapplication.data.sources
 import android.util.Log
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import com.succiue.myapplication.data.model.AccountModel
 import com.succiue.myapplication.data.model.BankUserModel
 import com.succiue.myapplication.data.model.KichtaUserModel
 import com.succiue.myapplication.utils.Constant
@@ -14,6 +15,8 @@ import retrofit2.http.POST
 
 interface UserSource {
     suspend fun getUser(): BankUserModel
+    suspend fun getBalance(): List<AccountModel>
+
 }
 
 class UserOnlineSource(user: KichtaUserModel) : UserSource {
@@ -29,7 +32,6 @@ class UserOnlineSource(user: KichtaUserModel) : UserSource {
                 builder.header(
                     "Authorization",
                     "Bea ${user.idToken}"
-                    //"Bea eyJhbGciOiJSUzI1NiIsImtpZCI6ImY4MDljZmYxMTZlNWJhNzQwNzQ1YmZlZGE1OGUxNmU4MmYzZmQ4MDUiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiTG91aXMgTE9NQkFSRCIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BTG01d3UxZkVxWVdRM05VSnlrMVdTU1Jqdm9HQUpkM3FIWWhvQnRpMnhVRmZRPXM5Ni1jIiwiaXNzIjoiaHR0cHM6Ly9zZWN1cmV0b2tlbi5nb29nbGUuY29tL2tpY2h0YXZpenVhbGl6ZXIiLCJhdWQiOiJraWNodGF2aXp1YWxpemVyIiwiYXV0aF90aW1lIjoxNjY4NTcyNzM0LCJ1c2VyX2lkIjoiOTlkUlVsNkdzVlN2eG5yTVZxT0c1aFRDc3YyMyIsInN1YiI6Ijk5ZFJVbDZHc1ZTdnhuck1WcU9HNWhUQ3N2MjMiLCJpYXQiOjE2Njg2NTIzOTUsImV4cCI6MTY2ODY1NTk5NSwiZW1haWwiOiJsb3Vpcy5yYXBoYWVsLmxvbWJhcmRAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMDc4OTMxNzA3NDU3NzI4MTk4MjMiXSwiZW1haWwiOlsibG91aXMucmFwaGFlbC5sb21iYXJkQGdtYWlsLmNvbSJdfSwic2lnbl9pbl9wcm92aWRlciI6Imdvb2dsZS5jb20ifX0.SrQmX_9cPvp_wGL5Byd0xZKKiW-eQflVsupUrh9Dr6BJRk5Mr0atF28-7qOZekS4cQDMRd0AUtNmsgHDHeHAwgPDWA9FY1LKmyjfSxMssJJAKkdWykIZR_DgqPfC5TXuZkgq9PNFbzlkyLvqywPqK1j7ibhCZnWehsxmdWoEFqQUUj3WbJOzLeZGbUfiqGAXKRjefgIGLM8Yp8MwIaDqym9FhZHUzEoHSY9w48q0qJc25UHOzsYntXajqqS22n45L08YhzCxHw0nCOtBrnQ-_yW54a-1tApnE2V_drHgmMvDJjHqbaIZ6A80qAq4c_06B42m5LdhpXlbLtAMDjXvTA"
                 )
                 builder.header("X-Platform", "Android")
                 return@Interceptor chain.proceed(builder.build())
@@ -48,9 +50,20 @@ class UserOnlineSource(user: KichtaUserModel) : UserSource {
         val accessToken: String
     )
 
+    data class Accounts(
+        val accounts: List<AccountModel>
+    )
+
+    data class DataFromBank(
+        val data: Accounts
+    )
+
     interface BankAccessServices {
         @POST("bank/getAccessToken")
         suspend fun getBankAccessToken(): BankAccessToken
+
+        @POST("bank/getBalanceInfo")
+        suspend fun getBalance(): DataFromBank
     }
 
     private val retrofitService: BankAccessServices by lazy {
@@ -61,5 +74,9 @@ class UserOnlineSource(user: KichtaUserModel) : UserSource {
         val token = retrofitService.getBankAccessToken().accessToken
         Log.d("UserSource", "BankAccessToken: ${retrofitService.getBankAccessToken().accessToken}")
         return BankUserModel(token, listOf())
+    }
+
+    override suspend fun getBalance(): List<AccountModel> {
+        return retrofitService.getBalance().data.accounts
     }
 }

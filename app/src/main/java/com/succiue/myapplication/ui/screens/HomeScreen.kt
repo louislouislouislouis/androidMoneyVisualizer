@@ -300,7 +300,11 @@ fun AppBody(
         startDestination = Screen.Home.route,
         Modifier.padding(innerPadding)
     ) {
-        composable(Screen.Home.route) { HomeBody(navController) }
+        composable(Screen.Home.route) {
+            HomeBody(navController, getBalanceAction = {  //This is the passed object
+                viewModel.getBalanceInfoFrom()
+            })
+        }
         composable(Screen.Stats.route) { StatsBody(navController) }
         composable(Screen.Goals.route) { GoalsBody(navController) }
         composable(Screen.Profile.route) { ProfileBody(navController, loginViewModel) }
