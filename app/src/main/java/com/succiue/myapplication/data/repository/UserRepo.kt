@@ -8,8 +8,8 @@ interface UserRepository {
     suspend fun getUser(): UserModel
 }
 
-class DefaultUserRepository(private val UserSource: UserSource) : UserRepository {
+class DefaultUserRepository(private val userSource: UserSource) : UserRepository {
     override suspend fun getUser(): UserModel {
-        return UserSource.getUser()
+        return userSource.getUser()
     }
 }

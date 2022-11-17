@@ -1,7 +1,5 @@
 package com.succiue.myapplication
 
-
-//import com.succiue.myapplication.ui.viewmodels.MyViewModelFactory
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -19,7 +17,8 @@ import com.plaid.link.result.LinkSuccess
 import com.succiue.myapplication.data.model.UserModel
 import com.succiue.myapplication.ui.screens.MoneyVisualizerHome
 import com.succiue.myapplication.ui.theme.MyApplicationTheme
-import com.succiue.myapplication.ui.viewmodels.ExtraParamsViewModelFactory
+import com.succiue.myapplication.ui.viewmodels.ExtraParamsLoginViewModelFactory
+import com.succiue.myapplication.ui.viewmodels.ExtraParamsMainViewModelFactory
 import com.succiue.myapplication.ui.viewmodels.LoginViewModel
 import com.succiue.myapplication.ui.viewmodels.MainViewModel
 import com.succiue.myapplication.utils.getSerializable
@@ -38,18 +37,24 @@ class MainActivity : ComponentActivity() {
     /**
      * The loginViewModel of our App
      */
-    private var loginViewModel = LoginViewModel(this)
+    private val loginViewModel: LoginViewModel by viewModels {
+        ExtraParamsLoginViewModelFactory(
+            loginActivity = this,
+            application = application as MoneyApp
+        )
+    }
 
     /**
      * The mainViewModel of our App
      */
     private val mainAppViewModel: MainViewModel by viewModels {
-        ExtraParamsViewModelFactory(application as MoneyApp, user)
+        ExtraParamsMainViewModelFactory(application as MoneyApp, user)
     }
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         // Get user variable
         user = intent.getSerializable("user", UserModel::class.java)

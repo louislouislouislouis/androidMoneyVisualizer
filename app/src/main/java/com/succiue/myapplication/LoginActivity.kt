@@ -4,11 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import com.succiue.myapplication.ui.screens.LoginScreen
 import com.succiue.myapplication.ui.theme.MyApplicationTheme
+import com.succiue.myapplication.ui.viewmodels.ExtraParamsLoginViewModelFactory
 import com.succiue.myapplication.ui.viewmodels.LoginViewModel
 
 
@@ -17,7 +19,16 @@ class LoginActivity : ComponentActivity() {
     /**
      * View Model for A Login Activity
      */
-    private var loginViewModel = LoginViewModel(this)
+    //private var loginViewModel = LoginViewModel(this)
+    /**
+     * The loginViewModel of our App
+     */
+    private val loginViewModel: LoginViewModel by viewModels {
+        ExtraParamsLoginViewModelFactory(
+            loginActivity = this,
+            application = application as MoneyApp
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

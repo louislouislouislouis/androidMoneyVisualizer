@@ -3,9 +3,9 @@ package com.succiue.myapplication.data
 import AccountOnlineSource
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import com.succiue.myapplication.data.repository.AccountRepository
-import com.succiue.myapplication.data.repository.AccountSource
-import com.succiue.myapplication.data.repository.DefaultAccountRepository
+import com.succiue.myapplication.data.repository.*
+import com.succiue.myapplication.data.sources.UserOnlineSource
+import com.succiue.myapplication.data.sources.UserSource
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
@@ -13,6 +13,8 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 interface AppContainer {
     val accountSource: AccountSource
     val accountRepository: AccountRepository
+    val userSource: UserSource
+    val userRepository: UserRepository
 }
 
 class DefaultAppContainer : AppContainer {
@@ -37,4 +39,12 @@ class DefaultAppContainer : AppContainer {
     override val accountRepository: AccountRepository by lazy {
         DefaultAccountRepository(accountSource)
     }
+
+    override val userSource: UserSource by lazy {
+        UserOnlineSource
+    }
+    override val userRepository: UserRepository by lazy {
+        DefaultUserRepository(userSource)
+    }
+
 }

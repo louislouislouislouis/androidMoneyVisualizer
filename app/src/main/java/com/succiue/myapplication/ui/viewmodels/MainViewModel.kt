@@ -14,13 +14,6 @@ import com.succiue.myapplication.data.model.UserModel
 import com.succiue.myapplication.data.repository.AccountRepository
 import com.succiue.myapplication.utils.sendRequest
 
-class ExtraParamsViewModelFactory(
-    private val application: MoneyApp,
-    private val myExtraUser: UserModel
-) : ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        MainViewModel(user = myExtraUser, application.container.accountRepository) as T
-}
 
 class MainViewModel(
     var user: UserModel,
@@ -46,7 +39,6 @@ class MainViewModel(
         var publicTokenValue = res.publicToken
         publicToken.value = publicTokenValue
         account?.getAccessToken(ctx, accessToken, publicTokenValue, needAnAccess)
-
     }
 
     /**
@@ -105,6 +97,16 @@ class MainViewModel(
             owner = user
         )
     }
-
-
 }
+
+/**
+ * Custom Factory
+ */
+class ExtraParamsMainViewModelFactory(
+    private val application: MoneyApp,
+    private val myExtraUser: UserModel
+) : ViewModelProvider.NewInstanceFactory() {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T =
+        MainViewModel(user = myExtraUser, application.container.accountRepository) as T
+}
+

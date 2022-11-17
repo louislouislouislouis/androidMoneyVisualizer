@@ -9,8 +9,5 @@ data class UserModel(
     var idToken: String, // trailing comma
 ) : Serializable {
     //TODO: Get
-
     val accounts = mutableListOf<AccountModel>()
-
-
 }

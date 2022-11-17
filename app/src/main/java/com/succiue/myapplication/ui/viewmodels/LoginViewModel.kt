@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
@@ -25,7 +26,9 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.succiue.myapplication.LoginActivity
 import com.succiue.myapplication.MainActivity
+import com.succiue.myapplication.MoneyApp
 import com.succiue.myapplication.data.model.UserModel
+import com.succiue.myapplication.data.repository.UserRepository
 import com.succiue.myapplication.utils.Constant
 import com.succiue.myapplication.utils.multipleNonNull
 import kotlinx.coroutines.CompletableDeferred
@@ -37,7 +40,11 @@ data class LoginUiState(
     var loginEnable: Boolean = true
 )
 
-class LoginViewModel(loginActivity: Activity) : ViewModel() {
+class LoginViewModel(
+    loginActivity: Activity,
+    private val userRepository: UserRepository
+
+) : ViewModel() {
     //Initialized once
     private var privateWebClientId = Constant.WEB_CLIENT_ID
     private var loginActivity = loginActivity
@@ -45,12 +52,6 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
     //New values
     private lateinit var oneTapClient: SignInClient
     private lateinit var signInRequest: BeginSignInRequest
-
-    //Custom value for signal
-    companion object {
-        var RC_SIGN_IN = 3
-        var REQ_ONE_TAP = 2
-    }
 
     //Firebase Final Auth
     private lateinit var auth: FirebaseAuth
@@ -114,6 +115,13 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
         // Remove Tap Methode Because cannot test it on Emulator, has to be done with real device
         //loginNewMethod()
         loginOldMethod()
+    }
+
+    /**
+     * Function Called on UserIntent
+     */
+    fun test() {
+
     }
 
     fun logout() {
@@ -277,7 +285,10 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
     }
 
     private fun loginOldMethod() {
-        loginActivity.startActivityForResult(mGoogleSignInClient.signInIntent, RC_SIGN_IN)
+        loginActivity.startActivityForResult(
+            mGoogleSignInClient.signInIntent,
+            Constant.CODE_GOOGLE_RC_SIGN_IN
+        )
     }
 
 
@@ -291,7 +302,7 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
             .addOnSuccessListener(loginActivity) { result ->
                 try {
                     loginActivity.startIntentSenderForResult(
-                        result.pendingIntent.intentSender, REQ_ONE_TAP,
+                        result.pendingIntent.intentSender, Constant.CODE_GOOGLE_REQ_ONE_TAP,
                         null, 0, 0, 0, null
                     )
                 } catch (e: IntentSender.SendIntentException) {
@@ -309,3 +320,17 @@ class LoginViewModel(loginActivity: Activity) : ViewModel() {
 
 
 }
+
+/**
+ * Custom Factory
+ */
+class ExtraParamsLoginViewModelFactory(
+    private val application: MoneyApp,
+    private val loginActivity: Activity
+) : ViewModelProvider.NewInstanceFactory() {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T =
+        LoginViewModel(loginActivity = loginActivity, application.container.userRepository) as T
+}
+
+
+
