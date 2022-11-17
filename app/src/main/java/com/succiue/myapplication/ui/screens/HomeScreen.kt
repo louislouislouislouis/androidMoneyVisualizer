@@ -301,9 +301,11 @@ fun AppBody(
         Modifier.padding(innerPadding)
     ) {
         composable(Screen.Home.route) {
-            HomeBody(navController, getBalanceAction = {  //This is the passed object
-                viewModel.getBalanceInfoFrom()
-            })
+            HomeBody(
+                navController,
+                getBalanceAction = { viewModel.getBalanceInfoFrom() },
+                getTransactionsAction = { viewModel.getTransactionInfoFrom() }
+            )
         }
         composable(Screen.Stats.route) { StatsBody(navController) }
         composable(Screen.Goals.route) { GoalsBody(navController) }

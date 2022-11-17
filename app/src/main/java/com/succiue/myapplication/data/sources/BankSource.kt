@@ -75,6 +75,7 @@ class BankOnlineSource(user: KichtaUserModel) : BankSource {
 
     private val retrofitService: BankTokenService by lazy {
         retrofit.create(BankTokenService::class.java)
+
     }
 
     override suspend fun getBankAccessToken(cred: BankCredentialsModel): BankCredentialsModel {

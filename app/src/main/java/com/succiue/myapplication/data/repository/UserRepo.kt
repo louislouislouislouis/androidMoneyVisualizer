@@ -3,6 +3,7 @@ package com.succiue.myapplication.data.repository
 import com.succiue.myapplication.data.model.AccountModel
 import com.succiue.myapplication.data.model.BankUserModel
 import com.succiue.myapplication.data.model.KichtaUserModel
+import com.succiue.myapplication.data.model.TransactionModel
 import com.succiue.myapplication.data.sources.UserOnlineSource
 
 
@@ -10,6 +11,7 @@ interface UserRepository {
     val kichtaUser: KichtaUserModel
     suspend fun getUser(): BankUserModel
     suspend fun getBalance(): List<AccountModel>
+    suspend fun getTransactions(): List<TransactionModel>
 }
 
 class DefaultUserRepository(
@@ -25,6 +27,10 @@ class DefaultUserRepository(
 
     override suspend fun getBalance(): List<AccountModel> {
         return userSource.getBalance()
+    }
+
+    override suspend fun getTransactions(): List<TransactionModel> {
+        return userSource.getTransactions()
     }
 
 

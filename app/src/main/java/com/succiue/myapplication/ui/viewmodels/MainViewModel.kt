@@ -38,6 +38,14 @@ class MainViewModel(
         }
     }
 
+
+    fun getTransactionInfoFrom() {
+        viewModelScope.launch {
+            val accountTR = userRepo.getTransactions()
+            Log.d("MainViewModel", "Voila les balance$accountTR")
+        }
+    }
+
     var uiState by mutableStateOf(MainUiState(loading = false, needAnAccess = true))
         private set
 
