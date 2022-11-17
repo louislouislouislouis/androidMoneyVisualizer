@@ -44,7 +44,6 @@ class MainActivity : ComponentActivity() {
     private val loginViewModel: LoginViewModel by viewModels {
         ExtraParamsLoginViewModelFactory(
             loginActivity = this,
-            application = application as MoneyApp
         )
     }
 
@@ -115,7 +114,7 @@ class MainActivity : ComponentActivity() {
         /**
          * Let the ViewController manage it
          */
-        loginViewModel.handleActivityResult(requestCode, resultCode, data)
+        loginViewModel.handleActivityResult(requestCode, data)
     }
 
     override fun onStart() {

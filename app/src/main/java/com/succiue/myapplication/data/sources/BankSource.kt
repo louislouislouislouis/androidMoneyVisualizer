@@ -2,6 +2,7 @@ package com.succiue.myapplication.data.sources
 
 import android.util.Log
 import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.succiue.myapplication.data.model.BankCredentialsModel
@@ -9,6 +10,7 @@ import com.succiue.myapplication.data.model.KichtaUserModel
 import com.succiue.myapplication.utils.Constant
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.Body
@@ -16,6 +18,7 @@ import retrofit2.http.POST
 
 
 interface BankSource {
+    suspend fun getBankLinkToken(): BankCredentialsModel
     suspend fun getBankAccessToken(cred: BankCredentialsModel): BankCredentialsModel
 }
 
@@ -24,6 +27,7 @@ class BankOnlineSource(user: KichtaUserModel) : BankSource {
         .add(KotlinJsonAdapterFactory())
         .build()
 
+    private var logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
     private val okHttpClient = OkHttpClient.Builder().apply {
         addInterceptor(
             Interceptor { chain ->
@@ -36,7 +40,9 @@ class BankOnlineSource(user: KichtaUserModel) : BankSource {
                 return@Interceptor chain.proceed(builder.build())
             }
         )
-    }.build()
+            .addInterceptor(logging)
+    }
+        .build()
 
 
     private val retrofit = Retrofit.Builder()
@@ -46,31 +52,44 @@ class BankOnlineSource(user: KichtaUserModel) : BankSource {
         .build()
 
     data class AccessToken(
-        @SerializedName("access_token") val accessToken: String
+        @Json(name = "access_token")
+        val accessToken: String
+    )
+
+    data class TokenLink(
+        @SerializedName("tokenLink") val tokenLink: String
     )
 
     data class PublicToken(
         @SerializedName("publicToken") val publicToken: String
     )
 
-    interface AccessTokenService {
+    interface BankTokenService {
         @POST("bank/exchangePktoAccessToken")
         suspend fun getBankAccessToken(@Body tkn: PublicToken): AccessToken
+
+        @POST("/bank/getLink")
+        suspend fun getMyBankLinkToken(): TokenLink
     }
 
-    private val retrofitService: AccessTokenService by lazy {
-        retrofit.create(AccessTokenService::class.java)
+
+    private val retrofitService: BankTokenService by lazy {
+        retrofit.create(BankTokenService::class.java)
     }
 
     override suspend fun getBankAccessToken(cred: BankCredentialsModel): BankCredentialsModel {
         cred.publicToken?.let { pbTkn ->
             val accessToken = retrofitService.getBankAccessToken(PublicToken(pbTkn))
-            Log.d("BankSource", "BankAccessToken: ${accessToken.accessToken}")
             cred.accessToken = accessToken.accessToken;
         } ?: run {
             Log.d("BankSource", "ERROR - > NO PUBLIKTOKEN")
         }
         return cred
+    }
+
+    override suspend fun getBankLinkToken(): BankCredentialsModel {
+        var lktoken = retrofitService.getMyBankLinkToken()
+        return BankCredentialsModel(linkToken = lktoken.tokenLink)
     }
 
 }

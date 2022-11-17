@@ -24,12 +24,12 @@ fun LoginScreen(viewModel: LoginViewModel) {
             Text(text = "LOGIN WITH GOOGLE")
         }
         Button(
-            enabled = !uiState.loginEnable,
+            //enabled = !uiState.loginEnable,
             onClick = { viewModel.logout() })
         {
             Text(text = "LOGOUT WITH GOOGLE")
         }
-        
+
         if (uiState.loading) {
             Text(text = "I LOAD")
         }

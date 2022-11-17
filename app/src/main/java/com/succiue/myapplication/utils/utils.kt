@@ -76,8 +76,6 @@ fun sendRequest(
 object Constant {
     const val WEB_CLIENT_ID =
         "473823468553-12tebj7jftchaasckr19oveqd8fsos1o.apps.googleusercontent.com"
-    const val TABLE_USER_ATTRIBUTE_DATA = "data"
-
     const val CODE_GOOGLE_RC_SIGN_IN = 3
     const val CODE_GOOGLE_REQ_ONE_TAP = 2
     const val URL_BANK = "https://bankbackuqac.herokuapp.com/"

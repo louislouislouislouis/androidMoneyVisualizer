@@ -10,9 +10,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.plaid.link.configuration.LinkTokenConfiguration
+import com.plaid.link.linkTokenConfiguration
 import com.plaid.link.result.LinkSuccess
 import com.succiue.myapplication.MoneyApp
-import com.succiue.myapplication.data.model.*
+import com.succiue.myapplication.data.model.BankCredentialsModel
+import com.succiue.myapplication.data.model.BankUserModel
+import com.succiue.myapplication.data.model.KichtaUserModel
 import com.succiue.myapplication.data.repository.BankRepository
 import com.succiue.myapplication.data.repository.UserRepository
 import kotlinx.coroutines.launch
@@ -32,14 +35,7 @@ class MainViewModel(
         private set
 
     var credentialsBank = BankCredentialsModel()
-
-
-    private val account: AccountModel = AccountModel(UserModel("e", "e", "e", "e"))
-    val publicToken = mutableStateOf("")
-    val accessToken = mutableStateOf("")
-    val linkToken = mutableStateOf("")
-
-
+    
     /**
      * The launcher has to be initialized by the activity
      */
@@ -59,8 +55,6 @@ class MainViewModel(
                     Log.d("MainViewModel", "Create UserBank ")
                     uiState = uiState.copy(needAnAccess = false)
                 }
-
-
             } catch (e: Exception) {
                 e.localizedMessage?.let {
                     Log.d("MainViewModel", it)
@@ -69,24 +63,25 @@ class MainViewModel(
                 }
             }
         }
-
-        //publicToken.value = publicTokenValue
-        //account?.getAccessToken(ctx, accessToken, publicTokenValue, uiState.needAnAccess)
     }
 
     /**
      * User Intent:
      * Function called on a button
      */
-    fun connectToBank(ctx: Context) {
-        linkAccountToPlaid?.let {
-            account.getPublicToken(
-                ctx = ctx,
-                linkAccountToPlaid = it,
-                linkToken = linkToken
-            )
-        }
+    fun connectToBank() {
+        linkAccountToPlaid?.let { linkPlaid ->
+            viewModelScope.launch {
+                var cred = bankRepo.getBankLinkToken()
 
+                val linkTokenConfiguration = linkTokenConfiguration {
+                    token = cred.linkToken
+                }
+
+                // Launch The connected activity with good linkTokenConfiguration
+                linkPlaid.launch(linkTokenConfiguration)
+            }
+        }
     }
 
 
@@ -122,6 +117,7 @@ class MainViewModel(
         }
     }
 }
+
 
 /**
  * Custom Factory

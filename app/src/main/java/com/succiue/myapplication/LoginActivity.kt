@@ -21,8 +21,7 @@ class LoginActivity : ComponentActivity() {
      */
     private val loginViewModel: LoginViewModel by viewModels {
         ExtraParamsLoginViewModelFactory(
-            loginActivity = this,
-            application = application as MoneyApp
+            loginActivity = this
         )
     }
 
@@ -53,7 +52,7 @@ class LoginActivity : ComponentActivity() {
      */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        loginViewModel.handleActivityResult(requestCode, resultCode, data)
+        loginViewModel.handleActivityResult(requestCode, data)
     }
 
 }

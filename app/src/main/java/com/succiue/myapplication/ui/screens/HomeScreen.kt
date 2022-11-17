@@ -76,15 +76,11 @@ fun MoneyVisualizerHome(
 
     // Loading Screen
     if (uiState.loading) {
-        Text(text = uiState.loading.toString())
-
+        Text(text = "Loading")
     } else {
         if (uiState.needAnAccess) {
-            Text(text = uiState.needAnAccess.toString())
             NoAccountScreen(viewModel)
-
         } else {
-
             /*
                * Show Normal Screen Only if no loading or don't need Connect bank
                *
