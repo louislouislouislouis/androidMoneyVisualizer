@@ -29,12 +29,7 @@ fun LoginScreen(viewModel: LoginViewModel) {
         {
             Text(text = "LOGOUT WITH GOOGLE")
         }
-        Button(
-            //enabled = !uiState.loginEnable,
-            onClick = { viewModel.test() })
-        {
-            Text(text = "TEST")
-        }
+        
         if (uiState.loading) {
             Text(text = "I LOAD")
         }

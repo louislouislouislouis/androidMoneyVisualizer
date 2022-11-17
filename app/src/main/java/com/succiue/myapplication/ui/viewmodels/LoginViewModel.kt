@@ -27,8 +27,7 @@ import com.google.firebase.ktx.Firebase
 import com.succiue.myapplication.LoginActivity
 import com.succiue.myapplication.MainActivity
 import com.succiue.myapplication.MoneyApp
-import com.succiue.myapplication.data.model.UserModel
-import com.succiue.myapplication.data.repository.UserRepository
+import com.succiue.myapplication.data.model.KichtaUserModel
 import com.succiue.myapplication.utils.Constant
 import com.succiue.myapplication.utils.multipleNonNull
 import kotlinx.coroutines.CompletableDeferred
@@ -42,8 +41,6 @@ data class LoginUiState(
 
 class LoginViewModel(
     loginActivity: Activity,
-    private val userRepository: UserRepository
-
 ) : ViewModel() {
     //Initialized once
     private var privateWebClientId = Constant.WEB_CLIENT_ID
@@ -117,16 +114,6 @@ class LoginViewModel(
         loginOldMethod()
     }
 
-    /**
-     * Function Called on UserIntent
-     */
-    fun test() {
-        viewModelScope.launch {
-            val user = userRepository.getUser()
-            Log.d("LoginViewModel", user.toString())
-        }
-
-    }
 
     fun logout() {
 
@@ -157,11 +144,11 @@ class LoginViewModel(
     }
 
 
-    suspend fun issThereAnyPerson(user: FirebaseUser): UserModel? {
+    suspend fun issThereAnyPerson(user: FirebaseUser): KichtaUserModel? {
         //if there is no FirebaseUser saved in mobile, don't need to dp that
         if (user != null) {
             // Generate all the info if FirebaseUser is found
-            val def = CompletableDeferred<UserModel?>()
+            val def = CompletableDeferred<KichtaUserModel?>()
             user?.getIdToken(true)?.addOnSuccessListener {
                 it.token?.let { token ->
                     idToken = token
@@ -169,7 +156,14 @@ class LoginViewModel(
                     uId = user?.uid
                     email = user?.email
                     multipleNonNull(uId, displayName, email, idToken) { id, displayN, mail, idTkn ->
-                        def.complete(UserModel(id, displayN, mail, idTkn))
+                        def.complete(
+                            KichtaUserModel(
+                                idKichta = id,
+                                idToken = idTkn,
+                                email = mail,
+                                displayName = displayN
+                            )
+                        )
                     }
                 }
             }?.addOnFailureListener {
@@ -333,12 +327,11 @@ class ExtraParamsLoginViewModelFactory(
     private val loginActivity: Activity
 ) : ViewModelProvider.NewInstanceFactory() {
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        application.container.userRepository?.let {
-            LoginViewModel(
-                loginActivity = loginActivity,
-                it
-            )
-        } as T
+
+        LoginViewModel(
+            loginActivity = loginActivity,
+        )
+                as T
 }
 
 

@@ -11,6 +11,7 @@ interface AppContainer {
 
     //val userSource: UserSource
     var userRepository: UserRepository?
+    val bankRepository: BankRepository?
 }
 
 class DefaultAppContainer() : AppContainer {
@@ -23,9 +24,11 @@ class DefaultAppContainer() : AppContainer {
     }
 
     override var userRepository: UserRepository? = null
+    override var bankRepository: BankRepository? = null
 
     fun setUser(user: KichtaUserModel) {
         userRepository = DefaultUserRepository(user)
+        bankRepository = DefaultBankRepo(user)
     }
 
 }

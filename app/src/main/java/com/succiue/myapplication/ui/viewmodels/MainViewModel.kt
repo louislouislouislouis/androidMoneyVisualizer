@@ -12,10 +12,8 @@ import androidx.lifecycle.viewModelScope
 import com.plaid.link.configuration.LinkTokenConfiguration
 import com.plaid.link.result.LinkSuccess
 import com.succiue.myapplication.MoneyApp
-import com.succiue.myapplication.data.model.AccountModel
-import com.succiue.myapplication.data.model.BankUserModel
-import com.succiue.myapplication.data.model.KichtaUserModel
-import com.succiue.myapplication.data.model.UserModel
+import com.succiue.myapplication.data.model.*
+import com.succiue.myapplication.data.repository.BankRepository
 import com.succiue.myapplication.data.repository.UserRepository
 import kotlinx.coroutines.launch
 
@@ -26,11 +24,14 @@ data class MainUiState(
 
 class MainViewModel(
     var user: KichtaUserModel,
-    private val userRepo: UserRepository
+    private val userRepo: UserRepository,
+    private val bankRepo: BankRepository
 ) : ViewModel() {
 
     var uiState by mutableStateOf(MainUiState(loading = false, needAnAccess = true))
         private set
+
+    var credentialsBank = BankCredentialsModel()
 
 
     private val account: AccountModel = AccountModel(UserModel("e", "e", "e", "e"))
@@ -40,14 +41,36 @@ class MainViewModel(
 
 
     /**
-     * The laucher has to be initialized by the activity
+     * The launcher has to be initialized by the activity
      */
     var linkAccountToPlaid: ActivityResultLauncher<LinkTokenConfiguration>? = null
 
+    /**
+     * Launcher callback
+     */
     fun onSuccess(res: LinkSuccess, ctx: Context) {
         // Send public_token to your server, exchange for access_token
         var publicTokenValue = res.publicToken
-        publicToken.value = publicTokenValue
+        credentialsBank.publicToken = publicTokenValue
+        viewModelScope.launch {
+            try {
+                bankRepo.getBankAccessToken(credentialsBank).accessToken?.let { token ->
+                    var bankUser = BankUserModel(bankToken = token)
+                    Log.d("MainViewModel", "Create UserBank ")
+                    uiState = uiState.copy(needAnAccess = false)
+                }
+
+
+            } catch (e: Exception) {
+                e.localizedMessage?.let {
+                    Log.d("MainViewModel", it)
+                } ?: run {
+                    Log.d("MainViewModel", "Undefined Error")
+                }
+            }
+        }
+
+        //publicToken.value = publicTokenValue
         //account?.getAccessToken(ctx, accessToken, publicTokenValue, uiState.needAnAccess)
     }
 
@@ -108,6 +131,10 @@ class ExtraParamsMainViewModelFactory(
     private val myExtraUser: KichtaUserModel
 ) : ViewModelProvider.NewInstanceFactory() {
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        application.container.userRepository?.let { MainViewModel(user = myExtraUser, it) } as T
+        application.container.userRepository?.let { userRepo ->
+            application.container.bankRepository?.let { bankRepo ->
+                MainViewModel(user = myExtraUser, userRepo = userRepo, bankRepo = bankRepo)
+            }
+        } as T
 }
 

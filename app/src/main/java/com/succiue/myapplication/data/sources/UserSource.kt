@@ -48,13 +48,13 @@ class UserOnlineSource(user: KichtaUserModel) : UserSource {
         val accessToken: String
     )
 
-    interface SteamAppsService {
+    interface BankAccessServices {
         @POST("bank/getAccessToken")
         suspend fun getBankAccessToken(): BankAccessToken
     }
 
-    private val retrofitService: SteamAppsService by lazy {
-        retrofit.create(SteamAppsService::class.java)
+    private val retrofitService: BankAccessServices by lazy {
+        retrofit.create(BankAccessServices::class.java)
     }
 
     override suspend fun getUser(): BankUserModel {

@@ -85,7 +85,6 @@ class MainActivity : ComponentActivity() {
 
         // Get AccessToken
         peekAvailableContext()?.let {
-            Log.d("EEE", "EEEE")
             lifecycleScope.launch {
                 mainAppViewModel.getAccessToken()
             }
