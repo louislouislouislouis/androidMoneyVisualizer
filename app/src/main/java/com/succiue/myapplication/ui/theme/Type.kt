@@ -14,21 +14,7 @@ var body1 = TextStyle(
 
 // Set of Material typography styles to start with
 val Typography = Typography(
-    displayLarge = body1,
-    displayMedium = body1,
-    displaySmall = body1,
-    headlineLarge = body1,
-    headlineMedium = body1,
-    headlineSmall = body1,
-    titleLarge = body1,
-    titleMedium = body1,
-    titleSmall = body1,
-    bodyLarge = body1,
-    bodyMedium = body1,
-    bodySmall = body1,
-    labelLarge = body1,
-    labelMedium = body1,
-    labelSmall = body1
+    
 )
 
 /* Other default text styles to override

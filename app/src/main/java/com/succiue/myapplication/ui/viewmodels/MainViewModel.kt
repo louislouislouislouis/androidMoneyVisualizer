@@ -1,6 +1,5 @@
 package com.succiue.myapplication.ui.viewmodels
 
-import android.content.Context
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.runtime.getValue
@@ -19,10 +18,19 @@ import com.succiue.myapplication.data.model.KichtaUserModel
 import com.succiue.myapplication.data.repository.BankRepository
 import com.succiue.myapplication.data.repository.UserRepository
 import kotlinx.coroutines.launch
+import java.util.*
+import java.util.Currency.getInstance
 
-data class MainUiState(
+data class MainBasicUiState(
     val loading: Boolean = false,
-    val needAnAccess: Boolean = true
+    val needAnAccess: Boolean = true,
+    val name: String = "",
+    val totalAmount: String = "",
+    val currency: String = ""
+)
+
+data class NumberToShow(
+    val TotalAccount: Double
 )
 
 class MainViewModel(
@@ -34,10 +42,31 @@ class MainViewModel(
     fun getBalanceInfoFrom() {
         viewModelScope.launch {
             val accountInfo = userRepo.getBalance()
+            var totalAmount: Double = 0.0
+            var currency: Currency? = null
+
+
+            accountInfo.forEach { accountMdl ->
+                Log.d("AAA", accountMdl.toString())
+                currency?.let { curr ->
+                    if (getInstance(accountMdl.balances.iso_currency_code) == curr) {
+                        totalAmount += accountMdl.balances.available!!
+                    }
+                } ?: run {
+                    currency = getInstance(accountMdl.balances.iso_currency_code)
+                }
+            }
+            var totalString = ""
+            var currencyString = ""
+            currency?.let { curr ->
+                currencyString = curr.symbol.toString()
+                totalString = String.format("%.2f", totalAmount)
+            }
+            uiState = uiState.copy(totalAmount = totalString, currency = currencyString)
+
             Log.d("MainViewModel", "Voila les balance$accountInfo")
         }
     }
-
 
     fun getTransactionInfoFrom() {
         viewModelScope.launch {
@@ -46,7 +75,13 @@ class MainViewModel(
         }
     }
 
-    var uiState by mutableStateOf(MainUiState(loading = false, needAnAccess = true))
+    var uiState by mutableStateOf(
+        MainBasicUiState(
+            loading = false,
+            needAnAccess = true,
+            name = user.displayName
+        )
+    )
         private set
 
     var credentialsBank = BankCredentialsModel()
@@ -59,7 +94,7 @@ class MainViewModel(
     /**
      * Launcher callback
      */
-    fun onSuccess(res: LinkSuccess, ctx: Context) {
+    fun onSuccess(res: LinkSuccess) {
         // Send public_token to your server, exchange for access_token
         var publicTokenValue = res.publicToken
         credentialsBank.publicToken = publicTokenValue
@@ -68,6 +103,8 @@ class MainViewModel(
                 bankRepo.getBankAccessToken(credentialsBank).accessToken?.let { token ->
                     var bankUser = BankUserModel(bankToken = token)
                     Log.d("MainViewModel", "Create UserBank ")
+                    getTransactionInfoFrom()
+                    getBalanceInfoFrom()
                     uiState = uiState.copy(needAnAccess = false)
                 }
             } catch (e: Exception) {
@@ -112,6 +149,7 @@ class MainViewModel(
             try {
                 bankUser = userRepo.getUser()
                 Log.d("MainViewModel", "Bank user : $bankUser")
+
             } catch (e: Exception) {
                 e.localizedMessage?.let {
                     Log.d("MainViewModel", it)
@@ -122,6 +160,8 @@ class MainViewModel(
             }
 
             bankUser?.let {
+                getTransactionInfoFrom()
+                getBalanceInfoFrom()
                 uiState = uiState.copy(needAnAccess = false);
             } ?: run {
                 uiState = uiState.copy(needAnAccess = true);

@@ -81,3 +81,14 @@ object Constant {
     const val URL_BANK = "https://bankbackuqac.herokuapp.com/"
 
 }
+
+fun codeToSign(code: String): String {
+    return when (code) {
+        "EUR" -> "€"
+        "D" -> "$"
+        "Y" -> "¥"
+        else -> { // Note the block
+            "£"
+        }
+    }
+}

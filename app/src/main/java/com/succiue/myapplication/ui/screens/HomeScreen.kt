@@ -250,6 +250,7 @@ fun AppCompactWidthNavigation(
     }
 
     Scaffold(
+        /*
         topBar = {
             TopBar(
                 title = currentScreenTitle,
@@ -259,7 +260,7 @@ fun AppCompactWidthNavigation(
                 navController.navigateUp()
             }
 
-        },
+        },*/
         bottomBar = {
             BottomBar(navController, modifier) {
                 currentScreenTitle = it.resourceId
@@ -303,6 +304,9 @@ fun AppBody(
         composable(Screen.Home.route) {
             HomeBody(
                 navController,
+                name = viewModel.uiState.name,
+                totalAmount = viewModel.uiState.totalAmount,
+                currency = viewModel.uiState.currency,
                 getBalanceAction = { viewModel.getBalanceInfoFrom() },
                 getTransactionsAction = { viewModel.getTransactionInfoFrom() }
             )

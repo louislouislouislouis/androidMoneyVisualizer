@@ -68,8 +68,8 @@ class MainActivity : ComponentActivity() {
         val linkAccountToPlaid =
             registerForActivityResult(OpenPlaidLink()) {
                 when (it) {
-                    is LinkSuccess -> peekAvailableContext()?.let { ctx ->
-                        mainAppViewModel.onSuccess(it, ctx)
+                    is LinkSuccess -> peekAvailableContext()?.let { _ ->
+                        mainAppViewModel.onSuccess(it)
                     }
                     is LinkExit -> Log.d(
                         "ConnectPlaid",
