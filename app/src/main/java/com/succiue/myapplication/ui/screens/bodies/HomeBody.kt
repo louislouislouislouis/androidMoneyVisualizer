@@ -1,5 +1,7 @@
 package com.succiue.myapplication.ui.screens.bodies
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
@@ -22,6 +24,7 @@ import com.succiue.myapplication.R
 import com.succiue.myapplication.ui.theme.MyApplicationTheme
 import com.succiue.myapplication.ui.viewmodels.TransactionUiState
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeBody(
     navController: NavHostController,
@@ -47,6 +50,16 @@ fun HomeBody(
                 item {
                     TotalSection(totalAmount, currency)
                 }
+                stickyHeader {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.onPrimary)
+                    ) {
+                        Text("My last Transactions", modifier = Modifier.padding(16.dp))
+                    }
+
+                }
                 items(listTransaction.size) { index ->
                     Card(
                         modifier = Modifier
@@ -67,7 +80,7 @@ fun HomeBody(
                                 color = if (listTransaction[index].amount.startsWith("-")) {
                                     MaterialTheme.colorScheme.error
                                 } else {
-                                    Color.Green
+                                    MaterialTheme.colorScheme.inversePrimary
                                 },
                                 modifier = Modifier
                                     .fillMaxHeight()
