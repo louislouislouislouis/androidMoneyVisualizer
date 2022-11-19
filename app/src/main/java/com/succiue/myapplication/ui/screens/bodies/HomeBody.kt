@@ -1,15 +1,15 @@
 package com.succiue.myapplication.ui.screens.bodies
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material3.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -20,10 +20,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.succiue.myapplication.R
 import com.succiue.myapplication.ui.theme.MyApplicationTheme
+import com.succiue.myapplication.ui.viewmodels.TransactionUiState
 
 @Composable
 fun HomeBody(
     navController: NavHostController,
+    listTransaction: List<TransactionUiState>,
     name: String,
     totalAmount: String,
     currency: String,
@@ -31,49 +33,83 @@ fun HomeBody(
     getTransactionsAction: () -> Unit
 
 ) {
-    val list = (1..10).map { it.toString() }
-    val configuration = LocalConfiguration.current
-
-    val screenHeight = configuration.screenWidthDp.dp
     Box(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.background)
             .fillMaxSize()
     ) {
-
         Column() {
-            GreetingSection(name)
-            TotalSection(totalAmount, currency)
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(screenHeight / 3),
-                contentPadding = PaddingValues(start = 7.5.dp, end = 7.5.dp, bottom = 100.dp),
-                modifier = Modifier.fillMaxHeight()
+            LazyColumn(
+                contentPadding = PaddingValues(start = 7.5.dp, end = 7.5.dp, bottom = 7.5.dp),
             ) {
-                items(list.size) { index ->
+                item {
+                    GreetingSection(name)
+                }
+                item {
+                    TotalSection(totalAmount, currency)
+                }
+                items(listTransaction.size) { index ->
                     Card(
                         modifier = Modifier
                             .padding(4.dp)
                             .fillMaxWidth(),
                     ) {
-                        Text(
-                            text = list[index],
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 30.sp,
-                            color = Color(0xFFFFFFFF),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(16.dp)
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+
+                        ) {
+                            Text(
+                                text = listTransaction[index].amount,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 15.sp,
+                                color = if (listTransaction[index].amount.startsWith("-")) {
+                                    MaterialTheme.colorScheme.error
+                                } else {
+                                    Color.Green
+                                },
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .width(80.dp)
+                            )
+                            Text(
+                                text = listTransaction[index].merchant,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 10.sp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                            )
+                            Text(
+                                text = listTransaction[index].date,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 10.sp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                            )
+                            Text(
+                                text = listTransaction[index].category,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 10.sp,
+                                textAlign = TextAlign.End,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                            )
+                        }
                     }
                 }
-            }
-            Text("I am the Home Body")
-            Button(onClick = { getBalanceAction() }) {
-                Text(text = "GET BALANCE (IN LOGCAT)")
-            }
-            Button(onClick = { getTransactionsAction() }) {
-                Text(text = "GET TRANSACTIONS (IN LOGCAT)")
+                item {
+                    GreetingSection(name)
+                }
             }
         }
+
     }
 }
 
@@ -95,7 +131,6 @@ fun GreetingSection(
             Text(
                 text = "Hi, $name",
                 style = MaterialTheme.typography.headlineMedium
-
             )
             Text(
                 text = "We wish you have a good day!",
@@ -140,7 +175,7 @@ fun TotalSection(
                 )
             }
         }
-        
+
 
     }
 }
@@ -154,8 +189,32 @@ fun ComposablePreview() {
             name = "Louis LOMBARD",
             totalAmount = "1234.50",
             currency = "$",
-            {},
-            {})
+            listTransaction = listOf(
+                TransactionUiState(
+                    amount = "-6.33£",
+                    merchant = "Uber",
+                    category = "Travel",
+                    date = "13/11/2022"
+                ), TransactionUiState(
+                    amount = "6.33£",
+                    merchant = "Uber",
+                    category = "Travel",
+                    date = "13/11/2022"
+                ), TransactionUiState(
+                    amount = "-6.33£",
+                    merchant = "Uber",
+                    category = "Travel",
+                    date = "13/11/2022"
+                ), TransactionUiState(
+                    amount = "-6.33£",
+                    merchant = "Uber",
+                    category = "Travel",
+                    date = "13/11/2022"
+                )
+            ),
+            getTransactionsAction = {},
+            getBalanceAction = {}
+        )
 
     }
 }

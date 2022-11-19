@@ -36,6 +36,18 @@ inline fun <T1 : Any, T2 : Any, T3 : Any, T4 : Any, R : Any> multipleNonNull(
     ) else null
 }
 
+inline fun <T1 : Any, T2 : Any, T3 : Any, R : Any> multipleNonNull(
+    p1: T1?,
+    p2: T2?,
+    p3: T3?,
+    block: (T1, T2, T3) -> R?
+): R? {
+    return if (p1 != null && p2 != null && p3 != null) block(
+        p1,
+        p2,
+        p3,
+    ) else null
+}
 
 fun sendRequest(
     ctx: Context,
@@ -82,13 +94,3 @@ object Constant {
 
 }
 
-fun codeToSign(code: String): String {
-    return when (code) {
-        "EUR" -> "€"
-        "D" -> "$"
-        "Y" -> "¥"
-        else -> { // Note the block
-            "£"
-        }
-    }
-}

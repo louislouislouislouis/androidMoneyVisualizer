@@ -17,20 +17,27 @@ import com.succiue.myapplication.data.model.BankUserModel
 import com.succiue.myapplication.data.model.KichtaUserModel
 import com.succiue.myapplication.data.repository.BankRepository
 import com.succiue.myapplication.data.repository.UserRepository
+import com.succiue.myapplication.utils.multipleNonNull
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.Currency.getInstance
+
+data class TransactionUiState(
+    val amount: String,
+    val merchant: String,
+    val category: String,
+    val date: String
+)
 
 data class MainBasicUiState(
     val loading: Boolean = false,
     val needAnAccess: Boolean = true,
     val name: String = "",
     val totalAmount: String = "",
-    val currency: String = ""
-)
-
-data class NumberToShow(
-    val TotalAccount: Double
+    val currency: String = "",
+    val transactionList: List<TransactionUiState> = listOf()
 )
 
 class MainViewModel(
@@ -45,9 +52,7 @@ class MainViewModel(
             var totalAmount: Double = 0.0
             var currency: Currency? = null
 
-
             accountInfo.forEach { accountMdl ->
-                Log.d("AAA", accountMdl.toString())
                 currency?.let { curr ->
                     if (getInstance(accountMdl.balances.iso_currency_code) == curr) {
                         totalAmount += accountMdl.balances.available!!
@@ -56,6 +61,7 @@ class MainViewModel(
                     currency = getInstance(accountMdl.balances.iso_currency_code)
                 }
             }
+
             var totalString = ""
             var currencyString = ""
             currency?.let { curr ->
@@ -71,7 +77,38 @@ class MainViewModel(
     fun getTransactionInfoFrom() {
         viewModelScope.launch {
             val accountTR = userRepo.getTransactions()
-            Log.d("MainViewModel", "Voila les balance$accountTR")
+            Log.d("MainViewModel", "Voila les tran$accountTR")
+            var listForUI: ArrayList<TransactionUiState> = ArrayList()
+            val formatters = DateTimeFormatter.ofPattern("d/MM/uuuu")
+            accountTR.forEach { trMdl ->
+                if (listForUI.size == 20) return@forEach
+                println("")
+                println(trMdl.iso_currency_code)
+                println(trMdl.category)
+                println(trMdl.authorized_date)
+                println("")
+
+                multipleNonNull(
+                    trMdl.iso_currency_code,
+                    trMdl.category,
+                    trMdl.authorized_date
+                ) { iso, cat, date ->
+                    var date = LocalDate.parse(date).format(formatters)
+                    listForUI.add(
+                        TransactionUiState(
+                            amount = String.format(
+                                "%.2f",
+                                -1 * trMdl.amount
+                            ) + getInstance(iso).symbol.toString(),
+                            merchant = trMdl.merchant_name?.let { it } ?: "Unknown",
+                            category = cat.first(),
+                            date = date
+                        )
+                    )
+                }
+                uiState = uiState.copy(transactionList = listForUI.toList())
+
+            }
         }
     }
 

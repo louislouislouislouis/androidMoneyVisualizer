@@ -307,6 +307,7 @@ fun AppBody(
                 name = viewModel.uiState.name,
                 totalAmount = viewModel.uiState.totalAmount,
                 currency = viewModel.uiState.currency,
+                listTransaction = viewModel.uiState.transactionList,
                 getBalanceAction = { viewModel.getBalanceInfoFrom() },
                 getTransactionsAction = { viewModel.getTransactionInfoFrom() }
             )
