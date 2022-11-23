@@ -1,6 +1,9 @@
 package com.succiue.myapplication.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,14 +18,17 @@ fun LoginScreen(viewModel: LoginViewModel) {
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         Button(
 
             enabled = uiState.loginEnable,
+            //colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary),
             onClick = { viewModel.login() })
         {
             Text(text = "LOGIN WITH GOOGLE")
         }
+
         Button(
             //enabled = !uiState.loginEnable,
             onClick = { viewModel.logout() })

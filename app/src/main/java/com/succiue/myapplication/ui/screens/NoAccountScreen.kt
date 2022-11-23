@@ -1,5 +1,6 @@
 package com.succiue.myapplication.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -13,9 +14,10 @@ import com.succiue.myapplication.ui.viewmodels.MainViewModel
 fun NoAccountScreen(viewModel: MainViewModel) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Text("Hello" + viewModel.user.displayName)
-        Text(text = "U do not have an account to the Bank")
+        Text("Hello " + viewModel.user.displayName)
+        Text(text = "You have not linked a Bank Account yet")
 
         Button(onClick = { viewModel.connectToBank() }) {
             Text(text = stringResource(R.string.welcoming_user))
