@@ -3,6 +3,7 @@ package com.succiue.myapplication.ui.screens.bodies
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -193,7 +194,8 @@ fun GraphSection(
 ) {
     ElevatedCard(modifier = Modifier
         .padding(10.dp)
-        .fillMaxWidth(),
+        .fillMaxWidth()
+        .clickable {  },
         shape = RoundedCornerShape(20.dp)
     ){
         Row(modifier = Modifier.padding(10.dp)){
