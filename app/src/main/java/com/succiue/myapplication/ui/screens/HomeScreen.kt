@@ -312,7 +312,9 @@ fun AppBody(
                 getTransactionsAction = { viewModel.getTransactionInfoFrom() }
             )
         }
-        composable(Screen.Stats.route) { StatsBody(navController) }
+        composable(Screen.Stats.route) { StatsBody(navController,
+            listTransaction = viewModel.uiState.transactionList
+        ) }
         composable(Screen.Goals.route) { GoalsBody(navController) }
         composable(Screen.Profile.route) { ProfileBody(navController, loginViewModel) }
     }

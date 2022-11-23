@@ -44,86 +44,14 @@ fun HomeBody(
             .fillMaxSize()
     ) {
         Column() {
-            LazyColumn(
-                contentPadding = PaddingValues(start = 5.dp, end = 5.dp, bottom = 7.5.dp),
-            ) {
-                item {
-                    GreetingSection(name)
-                }
-                item {
-                    TotalSection(totalAmount, currency)
-                }
-                item {
-                    GraphSection()
-                }
-                stickyHeader {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.onPrimary)
-                    ) {
-                        Text("My last Transactions", modifier = Modifier.padding(16.dp))
-                    }
 
-                }
-                items(listTransaction.size) { index ->
-                    Card(
-                        modifier = Modifier
-                            .padding(5.dp)
-                            .fillMaxWidth(),
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
+            GreetingSection("MoneyApp")
 
-                        ) {
-                            Text(
-                                text = listTransaction[index].amount,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 15.sp,
-                                color = if (listTransaction[index].amount.startsWith("-")) {
-                                    MaterialTheme.colorScheme.error
-                                } else {
-                                    MaterialTheme.colorScheme.inversePrimary
-                                },
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .width(80.dp)
-                            )
-                            Text(
-                                text = listTransaction[index].merchant,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 10.sp,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(1f)
-                                    .fillMaxHeight()
-                            )
-                            Text(
-                                text = listTransaction[index].date,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 10.sp,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(1f)
-                                    .fillMaxHeight()
-                            )
-                            Text(
-                                text = listTransaction[index].category,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 10.sp,
-                                textAlign = TextAlign.End,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(1f)
-                                    .fillMaxHeight()
-                            )
-                        }
-                    }
-                }
-            }
+            TotalSection(totalAmount, currency)
+
+            GraphSection()
+
+            ListSection(listTransaction = listTransaction)
         }
 
     }
@@ -143,7 +71,7 @@ fun GreetingSection(
     ) {
         Surface(){
             Text(
-                text = "MoneyApp",
+                text = name,
                 style = MaterialTheme.typography.headlineMedium
             )
         }
@@ -169,7 +97,11 @@ fun TotalSection(
             .fillMaxWidth()
             .padding(5.dp)
     ) {
-        ElevatedCard(modifier = Modifier.padding(5.dp), shape = RoundedCornerShape(20.dp)
+        ElevatedCard(modifier = Modifier.padding(5.dp),
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.onPrimary
+            )
         ) {
             Column(
                 modifier = Modifier.padding(15.dp),
@@ -195,22 +127,30 @@ fun GraphSection(
     ElevatedCard(modifier = Modifier
         .padding(10.dp)
         .fillMaxWidth()
-        .clickable {  },
-        shape = RoundedCornerShape(20.dp)
+        .clickable { },
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.onPrimary
+        )
     ){
-        Row(modifier = Modifier.padding(10.dp)){
+        Row(modifier = Modifier.padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically){
             Surface(Modifier.padding(5.dp)) {
                 Image(painter = painterResource(R.drawable.logo_app_mobile),
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .size(200.dp)
-                        .clip(RoundedCornerShape(percent = 10))
+                        .background(MaterialTheme.colorScheme.onPrimary),
+
                 )
             }
-            
+
             Column(
-                modifier = Modifier.padding(15.dp).fillMaxHeight().fillMaxWidth().wrapContentHeight(),
+                modifier = Modifier
+                    .padding(15.dp)
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
 
@@ -227,9 +167,104 @@ fun GraphSection(
                     text = "Votre Solde",
                     style = MaterialTheme.typography.bodyMedium
                 )
+                Text(
+                    text = "Votre Solde",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "Votre Solde",
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
 
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ListSection(listTransaction: List<TransactionUiState>
+) {
+    ElevatedCard(modifier = Modifier.padding(10.dp)
+        .background(MaterialTheme.colorScheme.onPrimary),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.onPrimary
+        )
+    ) {
+        LazyColumn(
+            contentPadding = PaddingValues(start = 5.dp, end = 5.dp, bottom = 7.5.dp),
+        ) {
+
+            stickyHeader {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.onPrimary)
+                ) {
+                    Text("My last Transactions", modifier = Modifier.padding(10.dp))
+                }
+
+            }
+            items(listTransaction.size) { index ->
+                Card(
+                    modifier = Modifier
+                        .padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp)
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.onPrimary),
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+
+                    ) {
+                        Text(
+                            text = listTransaction[index].amount,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = if (listTransaction[index].amount.startsWith("-")) {
+                                MaterialTheme.colorScheme.error
+                            } else {
+                                MaterialTheme.colorScheme.inversePrimary
+                            },
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(80.dp)
+                        )
+                        Text(
+                            text = listTransaction[index].merchant,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 10.sp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                                .fillMaxHeight()
+                        )
+                        Text(
+                            text = listTransaction[index].date,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 10.sp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                                .fillMaxHeight()
+                        )
+                        Text(
+                            text = listTransaction[index].category,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 10.sp,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                                .fillMaxHeight()
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -15,6 +15,8 @@ fun ProfileBody(navController: NavHostController, viewModel: LoginViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
+        GreetingSection("Profil")
+
         Button(
             enabled = !uiState.loginEnable,
             onClick = { viewModel.logout() })

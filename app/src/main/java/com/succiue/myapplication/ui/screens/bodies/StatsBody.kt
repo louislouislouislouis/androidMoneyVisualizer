@@ -18,71 +18,60 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.succiue.myapplication.R
+import com.succiue.myapplication.ui.viewmodels.TransactionUiState
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun StatsBody(navController: NavHostController) {
+fun StatsBody(navController: NavHostController, listTransaction: List<TransactionUiState>) {
     val isClicked = false
+    val selected = remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
             .fillMaxSize()
     ) {
         Column() {
-            LazyColumn(
-                contentPadding = PaddingValues(start = 5.dp, end = 5.dp, bottom = 7.5.dp),
-            ) {
-                item {
-                    GreetingSectionStats()
-                }
-                item{
-                    SelectButton()
-                }
-                item {
-                    GraphSection()
+            GreetingSection("Mes dépenses")
+            SelectButton(selected)
+            if(!selected.value){
+                LazyColumn(
+                    contentPadding = PaddingValues(start = 5.dp, end = 5.dp, bottom = 7.5.dp),
+                ) {
+                    item {
+                        GraphSection()
+                    }
+                    item {
+                        GraphSection()
+                    }
+                    item {
+                        GraphSection()
+                    }
+                    item {
+                        GraphSection()
+                    }
+                    item {
+                        GraphSection()
+                    }
                 }
             }
+            else{
+                ListSection(listTransaction = listTransaction)
+            }
+
         }
     }
 }
 
 
 @Composable
-fun GreetingSectionStats() {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(15.dp)
-    ) {
-        Surface(){
-            Text(
-                text = "Mes dépenses",
-                style = MaterialTheme.typography.headlineMedium
-            )
-        }
-        Icon(
-            painter = painterResource(id = R.drawable.logo_app_mobile),
-            contentDescription = null,
-            modifier = Modifier
-                .size(51.dp),
-            tint = Color.Unspecified
-        )
-    }
-}
-
-@Composable
-fun SelectButton(){
-    val selected = remember { mutableStateOf(false) }
-
+fun SelectButton(selected: MutableState<Boolean>){
     Box(modifier = Modifier
         .fillMaxWidth()
         .wrapContentWidth()
+        .wrapContentHeight()
     ){
         SubcomposeRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(15.dp),
+                .padding(top = 0.dp, bottom = 0.dp, start = 15.dp, end = 15.dp),
             paddingBetween = 20.dp) {
             Button(border = BorderStroke(1.dp, if (selected.value) Color.Gray else Color.Blue),
                 onClick = { selected.value = false },
