@@ -81,7 +81,7 @@ class MainViewModel(
             var listForUI: ArrayList<TransactionUiState> = ArrayList()
             val formatters = DateTimeFormatter.ofPattern("d/MM/uuuu")
             accountTR.forEach { trMdl ->
-                if (listForUI.size == 7) return@forEach
+                if (listForUI.size == 140) return@forEach
 
                 println(trMdl.iso_currency_code)
                 println(trMdl.category)
@@ -116,7 +116,7 @@ class MainViewModel(
         MainBasicUiState(
             loading = false,
             needAnAccess = true,
-            name = user.displayName
+            name = user.displayName,
         )
     )
         private set

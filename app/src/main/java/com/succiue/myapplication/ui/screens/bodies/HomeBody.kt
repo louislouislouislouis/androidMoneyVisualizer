@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -56,22 +57,26 @@ fun HomeBody(
     }
 
     val state = rememberPullRefreshState(refreshing, ::refresh)
+    Column() {
+        GreetingSection("MoneyApp")
+        Box(Modifier.pullRefresh(state)) {
+            LazyColumn(Modifier.fillMaxSize()) {
+                if (!refreshing) {
+                    stickyHeader {
 
-    Box(Modifier.pullRefresh(state)) {
-        LazyColumn(Modifier.fillMaxSize()) {
-            if (!refreshing) {
-                stickyHeader {
-                    GreetingSection("MoneyApp")
-                    TotalSection(totalAmount, currency)
-                    GraphSection()
-                    ListSection(
-                        listTransaction = listTransaction,
-                    )
+                        TotalSection(totalAmount, currency)
+                        GraphSection()
+                        ListSection(
+                            listTransaction = listTransaction,
+                            maxIndex = 8
+                        )
+                    }
                 }
             }
+            PullRefreshIndicator(refreshing, state, Modifier.align(Alignment.TopCenter))
         }
-        PullRefreshIndicator(refreshing, state, Modifier.align(Alignment.TopCenter))
     }
+
 }
 
 
@@ -172,36 +177,49 @@ fun GraphSection(
                 horizontalAlignment = Alignment.CenterHorizontally
 
             ) {
-                Text(
-                    text = "Votre Solde",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = "Votre Solde",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = "Votre Solde",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = "Votre Solde",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = "Votre Solde",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                LegendCard(text = "Votre solde")
+                LegendCard(text = "Votre solde")
+                LegendCard(text = "Votre solde")
+                LegendCard(text = "Votre solde")
+                LegendCard(text = "Votre solde")
+                LegendCard(text = "Votre solde")
+                LegendCard(text = "Votre solde")
             }
         }
+    }
+}
 
+@Composable
+fun LegendCard(text: String) {
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Card(
+            shape = CircleShape,
+            modifier = Modifier
+                .size(15.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.secondary
+            )
+        ) {
+
+        }
+
+        Spacer(modifier = Modifier.width(5.dp))
+
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium
+        )
     }
 }
 
 @Composable
 fun ListSection(
-    listTransaction: List<TransactionUiState>
+    listTransaction: List<TransactionUiState>, maxIndex: Int
 ) {
+    var index = 0
     ElevatedCard(
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier
@@ -224,67 +242,71 @@ fun ListSection(
             }
 
             listTransaction.forEach() { transaction ->
-                Card(
-                    modifier = Modifier
-                        .padding(start = 10.dp, end = 10.dp, top = 0.dp, bottom = 10.dp)
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp),
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
+                index += 1
+                if (index < maxIndex) {
+                    Card(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
+                            .padding(start = 10.dp, end = 10.dp, top = 0.dp, bottom = 10.dp)
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(10.dp),
                     ) {
-                        Text(
-                            text = transaction.amount,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp,
-                            color = if (transaction.amount.startsWith("-")) {
-                                MaterialTheme.colorScheme.error
-                            } else {
-                                MaterialTheme.colorScheme.inversePrimary
-                            },
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .fillMaxHeight()
-                                .width(80.dp)
-                        )
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                        ) {
+                            Text(
+                                text = transaction.amount,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 15.sp,
+                                color = if (transaction.amount.startsWith("-")) {
+                                    MaterialTheme.colorScheme.error
+                                } else {
+                                    MaterialTheme.colorScheme.inversePrimary
+                                },
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .width(80.dp)
+                            )
 
-                        Spacer(modifier = Modifier.width(10.dp))
+                            Spacer(modifier = Modifier.width(10.dp))
 
-                        Text(
-                            text = transaction.merchant,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 10.sp,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                                .fillMaxHeight()
-                        )
-                        Text(
-                            text = transaction.date,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 10.sp,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                                .fillMaxHeight()
-                        )
-                        Text(
-                            text = transaction.category,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 10.sp,
-                            textAlign = TextAlign.End,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                                .fillMaxHeight()
-                        )
+                            Text(
+                                text = transaction.merchant,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 10.sp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                            )
+                            Text(
+                                text = transaction.date,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 10.sp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                            )
+                            Text(
+                                text = transaction.category,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 10.sp,
+                                textAlign = TextAlign.End,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                            )
+                        }
                     }
+
+
                 }
-
-
             }
+
         }
     }
 }

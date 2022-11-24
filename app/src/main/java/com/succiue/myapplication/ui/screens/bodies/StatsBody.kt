@@ -79,7 +79,10 @@ fun StatsBody(navController: NavHostController, listTransaction: List<Transactio
                 ) {
                     if (!refreshing) {
                         item {
-                            ListSection(listTransaction = listTransaction)
+                            ListSection(
+                                listTransaction = listTransaction,
+                                maxIndex = listTransaction.size
+                            )
                         }
                     }
                 }

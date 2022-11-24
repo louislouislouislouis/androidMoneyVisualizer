@@ -60,7 +60,6 @@ val MainScreens = listOf(
 )
 
 
-
 fun Context.findActivity(): MainActivity? = when (this) {
     is MainActivity -> this
     is ContextWrapper -> baseContext.findActivity()
@@ -324,11 +323,20 @@ fun AppBody(
                 getTransactionsAction = { viewModel.getTransactionInfoFrom() }
             )
         }
-        composable(Screen.Stats.route) { StatsBody(navController,
-            listTransaction = viewModel.uiState.transactionList
-        ) }
+        composable(Screen.Stats.route) {
+            StatsBody(
+                navController,
+                listTransaction = viewModel.uiState.transactionList
+            )
+        }
         composable(Screen.Goals.route) { GoalsBody(navController) }
-        composable(Screen.Profile.route) { ProfileBody(navController, loginViewModel) }
+        composable(Screen.Profile.route) {
+            ProfileBody(
+                navController,
+                loginViewModel,
+                name = viewModel.uiState.name
+            )
+        }
     }
 }
 
@@ -380,7 +388,6 @@ fun BottomBar(
 
     }
 }
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
