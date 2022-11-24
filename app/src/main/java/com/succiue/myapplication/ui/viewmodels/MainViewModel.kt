@@ -82,7 +82,7 @@ class MainViewModel(
             val formatters = DateTimeFormatter.ofPattern("d/MM/uuuu")
             accountTR.forEach { trMdl ->
                 if (listForUI.size == 20) return@forEach
-                println("")
+
                 println(trMdl.iso_currency_code)
                 println(trMdl.category)
                 println(trMdl.authorized_date)
