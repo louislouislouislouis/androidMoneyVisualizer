@@ -60,36 +60,14 @@ fun HomeBody(
     Box(Modifier.pullRefresh(state)) {
         LazyColumn(Modifier.fillMaxSize()) {
             if (!refreshing) {
-                item {
-                    GreetingSection("MoneyApp")
-
-                }
-                item {
-                    TotalSection(totalAmount, currency)
-                }
-                item {
-                    GraphSection()
-                }
                 stickyHeader {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.onPrimary
-                        )
-                    ) {
-                        Text("My last transactions", modifier = Modifier.padding(10.dp))
-                    }
-                }
-                item {
+                    GreetingSection("MoneyApp")
+                    TotalSection(totalAmount, currency)
+                    GraphSection()
                     ListSection(
                         listTransaction = listTransaction,
                     )
                 }
-
-
             }
         }
         PullRefreshIndicator(refreshing, state, Modifier.align(Alignment.TopCenter))
@@ -130,10 +108,11 @@ fun TotalSection(
     amount: String,
     currency: String
 ) {
-    ElevatedCard(modifier = Modifier
-        .clickable { }
-        .padding(top = 0.dp, bottom = 0.dp, start = 10.dp, end = 10.dp),
+    ElevatedCard(
         shape = RoundedCornerShape(20.dp),
+        modifier = Modifier
+            .padding(top = 5.dp, bottom = 10.dp, start = 10.dp, end = 10.dp)
+            .clickable { },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.onPrimary
         )
@@ -158,10 +137,12 @@ fun TotalSection(
 fun GraphSection(
 ) {
     ElevatedCard(
+        shape = RoundedCornerShape(20.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(5.dp),
-        shape = RoundedCornerShape(20.dp),
+            .padding(top = 5.dp, bottom = 10.dp, start = 10.dp, end = 10.dp)
+            .clickable { },
+
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.onPrimary
         )
@@ -217,24 +198,35 @@ fun GraphSection(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ListSection(
     listTransaction: List<TransactionUiState>
 ) {
     ElevatedCard(
-        modifier = Modifier
-            .padding(10.dp),
         shape = RoundedCornerShape(20.dp),
+        modifier = Modifier
+            .padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
+            .clickable { },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.onPrimary
         )
     ) {
         Column() {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Text("Last transactions", modifier = Modifier.padding(10.dp))
+            }
+
             listTransaction.forEach() { transaction ->
                 Card(
                     modifier = Modifier
-                        .padding(10.dp)
+                        .padding(start = 10.dp, end = 10.dp, top = 0.dp, bottom = 10.dp)
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
                 ) {
@@ -296,6 +288,7 @@ fun ListSection(
         }
     }
 }
+
 
 @Preview(showSystemUi = true)
 @Composable

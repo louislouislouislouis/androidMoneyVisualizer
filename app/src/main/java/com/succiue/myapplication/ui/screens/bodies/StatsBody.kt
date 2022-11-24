@@ -1,16 +1,19 @@
 package com.succiue.myapplication.ui.screens.bodies
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Measurable
@@ -21,46 +24,70 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.succiue.myapplication.ui.viewmodels.TransactionUiState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun StatsBody(navController: NavHostController, listTransaction: List<TransactionUiState>) {
-    val isClicked = false
     val selected = remember { mutableStateOf(false) }
+    val refreshScope = rememberCoroutineScope()
+    var refreshing by remember { mutableStateOf(false) }
+    var itemCount by remember { mutableStateOf(15) }
+
+    fun refresh() = refreshScope.launch {
+        refreshing = true
+        delay(1500)
+        itemCount += 5
+        refreshing = false
+    }
+
+    val state = rememberPullRefreshState(refreshing, ::refresh)
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .pullRefresh(state)
     ) {
         Column() {
-
             GreetingSection("Mes dépenses")
 
             SelectButton(selected)
 
             if (!selected.value) {
-                LazyColumn(
-                    contentPadding = PaddingValues(start = 5.dp, end = 5.dp, bottom = 7.5.dp),
-                ) {
-                    item {
-                        GraphSection()
-                    }
-                    item {
-                        GraphSection()
-                    }
-                    item {
-                        GraphSection()
-                    }
-                    item {
-                        GraphSection()
-                    }
-                    item {
-                        GraphSection()
+                LazyColumn(Modifier.fillMaxSize()) {
+                    if (!refreshing) {
+                        item {
+                            GraphSection()
+                        }
+                        item {
+                            GraphSection()
+                        }
+                        item {
+                            GraphSection()
+                        }
+                        item {
+                            GraphSection()
+                        }
+                        item {
+                            GraphSection()
+                        }
                     }
                 }
             } else {
-                ListSection(listTransaction = listTransaction)
+                LazyColumn(
+                    contentPadding = PaddingValues(start = 5.dp, end = 5.dp, bottom = 7.5.dp),
+                ) {
+                    if (!refreshing) {
+                        item {
+                            ListSection(listTransaction = listTransaction)
+                        }
+                    }
+                }
+
             }
 
         }
+        PullRefreshIndicator(refreshing, state, Modifier.align(Alignment.TopCenter))
     }
 }
 
