@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,8 +15,11 @@ import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.succiue.myapplication.R
 import com.succiue.myapplication.ui.viewmodels.TransactionUiState
@@ -29,8 +33,11 @@ fun StatsBody(navController: NavHostController, listTransaction: List<Transactio
             .fillMaxSize()
     ) {
         Column() {
+
             GreetingSection("Mes dépenses")
+
             SelectButton(selected)
+
             if(!selected.value){
                 LazyColumn(
                     contentPadding = PaddingValues(start = 5.dp, end = 5.dp, bottom = 7.5.dp),
@@ -53,7 +60,7 @@ fun StatsBody(navController: NavHostController, listTransaction: List<Transactio
                 }
             }
             else{
-                ListSection(listTransaction = listTransaction)
+                ListSection(listTransaction = listTransaction, listTransaction.size, "My transactions", true)
             }
 
         }

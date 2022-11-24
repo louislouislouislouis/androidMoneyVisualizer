@@ -5,6 +5,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -31,8 +32,8 @@ fun GoalsBody(navController: NavHostController) {
 
     Scaffold(floatingActionButton = {
         FloatingActionButton(onClick = {},
-            backgroundColor = androidx.compose.material.MaterialTheme.colors.onBackground,
-            contentColor = androidx.compose.material.MaterialTheme.colors.onPrimary)
+            backgroundColor = androidx.compose.material.MaterialTheme.colors.onPrimary,
+            contentColor = androidx.compose.material.MaterialTheme.colors.onBackground)
         {
             Icon(Icons.Filled.Add, contentDescription = "Play")
         }
@@ -44,7 +45,41 @@ fun GoalsBody(navController: NavHostController) {
         ) {
             Column() {
                 GreetingSection("Objectifs")
+                
+                GoalFragment(goalName = "Fast Food")
+
+                GoalFragment(goalName = "Bar / Pub")
             }
+        }
+    }
+}
+
+
+@Composable
+fun GoalFragment(
+    goalName: String
+){
+    ElevatedCard(modifier = Modifier
+        .padding(10.dp)
+        .fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.onPrimary
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(15.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = goalName,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = "Votre Solde",
+                style = MaterialTheme.typography.headlineLarge
+            )
+
         }
     }
 }

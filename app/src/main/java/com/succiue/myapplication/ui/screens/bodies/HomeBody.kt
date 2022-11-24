@@ -12,7 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -49,9 +53,13 @@ fun HomeBody(
 
             TotalSection(totalAmount, currency)
 
+            Spacer(modifier = Modifier.height(10.dp))
+
             GraphSection()
 
-            ListSection(listTransaction = listTransaction)
+            Spacer(modifier = Modifier.height(10.dp))
+
+            ListSection(listTransaction = listTransaction, 7, "My last transactions", false)
         }
 
     }
@@ -79,7 +87,7 @@ fun GreetingSection(
             painter = painterResource(id = R.drawable.logo_app_mobile),
             contentDescription = null,
             modifier = Modifier
-                .size(51.dp),
+                .size(34.dp),
             tint = Color.Unspecified
         )
     }
@@ -91,32 +99,25 @@ fun TotalSection(
     amount: String,
     currency: String
 ) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(5.dp)
+    ElevatedCard(modifier = Modifier.clickable {  }
+        .padding(top = 0.dp, bottom = 0.dp, start = 10.dp, end = 10.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.onPrimary
+        )
     ) {
-        ElevatedCard(modifier = Modifier.padding(5.dp),
-            shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.onPrimary
-            )
+        Column(
+            modifier = Modifier.padding(15.dp),
+            verticalArrangement = Arrangement.Center
         ) {
-            Column(
-                modifier = Modifier.padding(15.dp),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "Votre Solde",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = "$amount $currency",
-                    style = MaterialTheme.typography.headlineLarge
-                )
-
-            }
+            Text(
+                text = "Votre Solde",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = "$amount $currency",
+                style = MaterialTheme.typography.headlineLarge
+            )
         }
     }
 }
@@ -125,9 +126,9 @@ fun TotalSection(
 fun GraphSection(
 ) {
     ElevatedCard(modifier = Modifier
-        .padding(10.dp)
         .fillMaxWidth()
-        .clickable { },
+        .clickable { }
+        .padding(top = 5.dp, bottom = 0.dp, start = 10.dp, end = 10.dp),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.onPrimary
@@ -183,10 +184,10 @@ fun GraphSection(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ListSection(listTransaction: List<TransactionUiState>
+fun ListSection(listTransaction: List<TransactionUiState>, indexMax : Int, textTransaction : String, isScrolling : Boolean
 ) {
-    ElevatedCard(modifier = Modifier.padding(10.dp)
-        .background(MaterialTheme.colorScheme.onPrimary),
+    ElevatedCard(modifier = Modifier.clickable {  }
+        .padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 10.dp),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.onPrimary
@@ -194,80 +195,103 @@ fun ListSection(listTransaction: List<TransactionUiState>
     ) {
         LazyColumn(
             contentPadding = PaddingValues(start = 5.dp, end = 5.dp, bottom = 7.5.dp),
+            modifier = Modifier.scrollEnabled(
+                enabled = isScrolling, //provide a mutable state boolean here
+            )
         ) {
 
             stickyHeader {
-                Box(
+                Card(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.onPrimary)
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.onPrimary
+                    )
                 ) {
-                    Text("My last Transactions", modifier = Modifier.padding(10.dp))
+                    Text(textTransaction, modifier = Modifier.padding(10.dp))
                 }
 
             }
-            items(listTransaction.size) { index ->
-                Card(
-                    modifier = Modifier
-                        .padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp)
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.onPrimary),
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
 
+            items(listTransaction.size) { index ->
+                if(index<indexMax){
+                    Card(
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp)
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(10.dp),
                     ) {
-                        Text(
-                            text = listTransaction[index].amount,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp,
-                            color = if (listTransaction[index].amount.startsWith("-")) {
-                                MaterialTheme.colorScheme.error
-                            } else {
-                                MaterialTheme.colorScheme.inversePrimary
-                            },
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .width(80.dp)
-                        )
-                        Text(
-                            text = listTransaction[index].merchant,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 10.sp,
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .weight(1f)
-                                .fillMaxHeight()
-                        )
-                        Text(
-                            text = listTransaction[index].date,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 10.sp,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                                .fillMaxHeight()
-                        )
-                        Text(
-                            text = listTransaction[index].category,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 10.sp,
-                            textAlign = TextAlign.End,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                                .fillMaxHeight()
-                        )
+                                .padding(8.dp)
+
+                        ) {
+                            Text(
+                                text = listTransaction[index].amount,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 15.sp,
+                                color = if (listTransaction[index].amount.startsWith("-")) {
+                                    MaterialTheme.colorScheme.error
+                                } else {
+                                    MaterialTheme.colorScheme.inversePrimary
+                                },
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .width(80.dp)
+                            )
+
+                            Spacer(modifier = Modifier.width(10.dp))
+
+                            Text(
+                                text = listTransaction[index].merchant,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 10.sp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                            )
+                            Text(
+                                text = listTransaction[index].date,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 10.sp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                            )
+                            Text(
+                                text = listTransaction[index].category,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 10.sp,
+                                textAlign = TextAlign.End,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                            )
+                        }
                     }
                 }
+
             }
         }
     }
 }
 
+fun Modifier.scrollEnabled(
+    enabled: Boolean,
+) = nestedScroll(
+    connection = object : NestedScrollConnection {
+        override fun onPreScroll(
+            available: Offset,
+            source: NestedScrollSource
+        ): Offset = if(enabled) Offset.Zero else available
+    }
+)
 
 @Preview(showSystemUi = true)
 @Composable
