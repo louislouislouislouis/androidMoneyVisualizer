@@ -2,6 +2,7 @@ package com.succiue.myapplication.ui.screens
 
 import android.content.Context
 import android.content.ContextWrapper
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -9,12 +10,15 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -54,6 +58,8 @@ val MainScreens = listOf(
     Screen.Goals,
     Screen.Profile,
 )
+
+
 
 fun Context.findActivity(): MainActivity? = when (this) {
     is MainActivity -> this
@@ -236,7 +242,7 @@ fun AppCompactWidthNavigation(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     viewModel: MainViewModel,
-    loginViewModel: LoginViewModel
+    loginViewModel: LoginViewModel,
 ) {
 
     /**
@@ -249,18 +255,24 @@ fun AppCompactWidthNavigation(
         mutableStateOf(false)
     }
 
+
+
     Scaffold(
+
         /*
         topBar = {
             TopBar(
                 title = currentScreenTitle,
                 canNavigateBack = canNavigateBack,
-                modifier
+                modifier,
+
             ) {
                 navController.navigateUp()
             }
 
-        },*/
+        },
+
+         */
         bottomBar = {
             BottomBar(navController, modifier) {
                 currentScreenTitle = it.resourceId
@@ -312,7 +324,9 @@ fun AppBody(
                 getTransactionsAction = { viewModel.getTransactionInfoFrom() }
             )
         }
-        composable(Screen.Stats.route) { StatsBody(navController) }
+        composable(Screen.Stats.route) { StatsBody(navController,
+            listTransaction = viewModel.uiState.transactionList
+        ) }
         composable(Screen.Goals.route) { GoalsBody(navController) }
         composable(Screen.Profile.route) { ProfileBody(navController, loginViewModel) }
     }
@@ -367,6 +381,8 @@ fun BottomBar(
     }
 }
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(
@@ -375,7 +391,9 @@ fun TopBar(
     modifier: Modifier = Modifier,
     navigateBack: () -> Unit
 ) {
-    TopAppBar(
+    val contextForToast = LocalContext.current.applicationContext
+
+    CenterAlignedTopAppBar(
         title = { Text(stringResource(id = title)) },
         modifier = modifier,
         navigationIcon = {
@@ -388,5 +406,35 @@ fun TopBar(
                 }
             }
         },
+
+        actions = {
+            TopAppBarActionButton(
+                imageVector = Icons.Outlined.Search,
+                description = "Search"
+            ) {
+                Toast.makeText(contextForToast, "Search Click", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+
     )
+}
+
+@Composable
+fun TopAppBarActionButton(
+    imageVector: ImageVector,
+    description: String,
+    onClick: () -> Unit
+) {
+    IconButton(onClick = {
+        onClick()
+    }) {
+        Icon(
+            painter = painterResource(id = R.drawable.logo_app_mobile),
+            contentDescription = null,
+            modifier = Modifier
+                .size(51.dp),
+            tint = Color.Unspecified
+        )
+    }
 }
