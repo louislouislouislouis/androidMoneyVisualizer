@@ -1,27 +1,25 @@
 package com.succiue.myapplication.ui.screens.bodies
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.succiue.myapplication.R
 import com.succiue.myapplication.ui.viewmodels.TransactionUiState
 
 @Composable
@@ -38,7 +36,7 @@ fun StatsBody(navController: NavHostController, listTransaction: List<Transactio
 
             SelectButton(selected)
 
-            if(!selected.value){
+            if (!selected.value) {
                 LazyColumn(
                     contentPadding = PaddingValues(start = 5.dp, end = 5.dp, bottom = 7.5.dp),
                 ) {
@@ -58,9 +56,8 @@ fun StatsBody(navController: NavHostController, listTransaction: List<Transactio
                         GraphSection()
                     }
                 }
-            }
-            else{
-                ListSection(listTransaction = listTransaction, listTransaction.size, "My transactions", true)
+            } else {
+                ListSection(listTransaction = listTransaction)
             }
 
         }
@@ -69,34 +66,39 @@ fun StatsBody(navController: NavHostController, listTransaction: List<Transactio
 
 
 @Composable
-fun SelectButton(selected: MutableState<Boolean>){
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .wrapContentWidth()
-        .wrapContentHeight()
-    ){
+fun SelectButton(selected: MutableState<Boolean>) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentWidth()
+            .wrapContentHeight()
+    ) {
         SubcomposeRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 0.dp, bottom = 0.dp, start = 15.dp, end = 15.dp),
-            paddingBetween = 20.dp) {
-            Button(border = BorderStroke(1.dp, if (selected.value) Color.Gray else Color.Blue),
+            paddingBetween = 20.dp
+        ) {
+            Button(
+                border = BorderStroke(1.dp, if (selected.value) Color.Gray else Color.Blue),
                 onClick = { selected.value = false },
                 colors = ButtonDefaults.buttonColors(
                     contentColor = Color.Gray,
                     containerColor = MaterialTheme.colorScheme.onPrimary
                 )
-                )
+            )
             {
                 Text(text = "Graphiques")
             }
 
-            Button(border = BorderStroke(1.dp, if (!selected.value) Color.Gray else Color.Blue),
+            Button(
+                border = BorderStroke(1.dp, if (!selected.value) Color.Gray else Color.Blue),
                 onClick = { selected.value = true },
                 colors = ButtonDefaults.buttonColors(
                     contentColor = Color.Gray,
                     containerColor = MaterialTheme.colorScheme.onPrimary
-                )) {
+                )
+            ) {
                 Text(text = "Dépenses")
             }
 
