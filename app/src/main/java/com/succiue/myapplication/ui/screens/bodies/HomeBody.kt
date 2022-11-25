@@ -58,22 +58,29 @@ fun HomeBody(
 
     val state = rememberPullRefreshState(refreshing, ::refresh)
     Column() {
-        GreetingSection("MoneyApp")
         Box(Modifier.pullRefresh(state)) {
             LazyColumn(Modifier.fillMaxSize()) {
-                if (!refreshing) {
-                    stickyHeader {
-
-                        TotalSection(totalAmount, currency)
-                        GraphSection()
-                        ListSection(
-                            listTransaction = listTransaction,
-                            maxIndex = 8
-                        )
-                    }
+                stickyHeader {
+                    GreetingSection(name)
+                }
+                item {
+                    TotalSection(totalAmount, currency)
+                }
+                item {
+                    GraphSection()
+                }
+                item {
+                    ListSection(
+                        listTransaction = listTransaction,
+                        maxIndex = 8
+                    )
                 }
             }
-            PullRefreshIndicator(refreshing, state, Modifier.align(Alignment.TopCenter))
+            PullRefreshIndicator(
+                refreshing,
+                state,
+                Modifier.align(Alignment.TopCenter)
+            )
         }
     }
 

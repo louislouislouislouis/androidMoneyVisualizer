@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun StatsBody(navController: NavHostController, listTransaction: List<TransactionUiState>) {
-    val selected = remember { mutableStateOf(false) }
+    val transactionVision = remember { mutableStateOf(false) }
     val refreshScope = rememberCoroutineScope()
     var refreshing by remember { mutableStateOf(false) }
     var itemCount by remember { mutableStateOf(15) }
@@ -49,46 +49,36 @@ fun StatsBody(navController: NavHostController, listTransaction: List<Transactio
             .pullRefresh(state)
     ) {
         Column() {
-            GreetingSection("Mes dépenses")
-
-            SelectButton(selected)
-
-            if (!selected.value) {
-                LazyColumn(Modifier.fillMaxSize()) {
-                    if (!refreshing) {
-                        item {
-                            GraphSection()
-                        }
-                        item {
-                            GraphSection()
-                        }
-                        item {
-                            GraphSection()
-                        }
-                        item {
-                            GraphSection()
-                        }
-                        item {
-                            GraphSection()
-                        }
+            LazyColumn(Modifier.fillMaxSize()) {
+                stickyHeader {
+                    GreetingSection("Mes dépenses")
+                    SelectButton(transactionVision)
+                }
+                if (!transactionVision.value) {
+                    item {
+                        GraphSection()
+                    }
+                    item {
+                        GraphSection()
+                    }
+                    item {
+                        GraphSection()
+                    }
+                    item {
+                        GraphSection()
+                    }
+                    item {
+                        GraphSection()
+                    }
+                } else {
+                    item {
+                        ListSection(
+                            listTransaction = listTransaction,
+                            maxIndex = listTransaction.size
+                        )
                     }
                 }
-            } else {
-                LazyColumn(
-                    contentPadding = PaddingValues(start = 5.dp, end = 5.dp, bottom = 7.5.dp),
-                ) {
-                    if (!refreshing) {
-                        item {
-                            ListSection(
-                                listTransaction = listTransaction,
-                                maxIndex = listTransaction.size
-                            )
-                        }
-                    }
-                }
-
             }
-
         }
         PullRefreshIndicator(refreshing, state, Modifier.align(Alignment.TopCenter))
     }
