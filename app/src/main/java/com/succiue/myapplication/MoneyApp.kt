@@ -1,13 +1,11 @@
 package com.succiue.myapplication
 
 import android.app.Application
-import com.succiue.myapplication.data.DefaultAppContainer
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class MoneyApp : Application() {
-    lateinit var container: DefaultAppContainer
-
     override fun onCreate() {
         super.onCreate()
-        container = DefaultAppContainer()
     }
 }

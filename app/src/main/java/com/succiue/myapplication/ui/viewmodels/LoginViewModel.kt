@@ -8,7 +8,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
@@ -29,6 +28,9 @@ import com.succiue.myapplication.MainActivity
 import com.succiue.myapplication.data.model.KichtaUserModel
 import com.succiue.myapplication.utils.Constant
 import com.succiue.myapplication.utils.multipleNonNull
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
 
@@ -38,8 +40,13 @@ data class LoginUiState(
     var loginEnable: Boolean = true
 )
 
-class LoginViewModel(
-    private var loginActivity: Activity,
+@AssistedFactory
+interface LoginViewModelFactory {
+    fun create(loginActivity: Activity): LoginViewModel
+}
+
+class LoginViewModel @AssistedInject constructor(
+    @Assisted var loginActivity: Activity,
 ) : ViewModel() {
 
     //New values
@@ -312,20 +319,5 @@ class LoginViewModel(
 
 
 }
-
-/**
- * Custom Factory
- */
-class ExtraParamsLoginViewModelFactory(
-    private val loginActivity: Activity
-) : ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T =
-
-        LoginViewModel(
-            loginActivity = loginActivity,
-        )
-                as T
-}
-
 
 

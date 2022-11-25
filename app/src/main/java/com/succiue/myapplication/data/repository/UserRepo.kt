@@ -6,7 +6,6 @@ import com.succiue.myapplication.data.model.KichtaUserModel
 import com.succiue.myapplication.data.model.TransactionModel
 import com.succiue.myapplication.data.sources.UserOnlineSource
 
-
 interface UserRepository {
     val kichtaUser: KichtaUserModel
     suspend fun getUser(): BankUserModel

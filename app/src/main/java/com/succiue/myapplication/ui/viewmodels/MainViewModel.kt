@@ -6,18 +6,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.plaid.link.configuration.LinkTokenConfiguration
 import com.plaid.link.linkTokenConfiguration
 import com.plaid.link.result.LinkSuccess
-import com.succiue.myapplication.MoneyApp
 import com.succiue.myapplication.data.model.BankCredentialsModel
 import com.succiue.myapplication.data.model.BankUserModel
 import com.succiue.myapplication.data.model.KichtaUserModel
 import com.succiue.myapplication.data.repository.BankRepository
+import com.succiue.myapplication.data.repository.DefaultBankRepo
+import com.succiue.myapplication.data.repository.DefaultUserRepository
 import com.succiue.myapplication.data.repository.UserRepository
 import com.succiue.myapplication.utils.multipleNonNull
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -40,11 +43,17 @@ data class MainBasicUiState(
     val transactionList: List<TransactionUiState> = listOf()
 )
 
-class MainViewModel(
-    var user: KichtaUserModel,
-    private val userRepo: UserRepository,
-    private val bankRepo: BankRepository
+@AssistedFactory
+interface MainViewModelFactory {
+    fun create(user: KichtaUserModel): MainViewModel
+}
+
+class MainViewModel @AssistedInject constructor(
+    @Assisted var user: KichtaUserModel,
 ) : ViewModel() {
+
+    private val userRepo: UserRepository = DefaultUserRepository(user)
+    private val bankRepo: BankRepository = DefaultBankRepo(user)
 
     fun getBalanceInfoFrom() {
         viewModelScope.launch {
@@ -209,20 +218,3 @@ class MainViewModel(
         }
     }
 }
-
-
-/**
- * Custom Factory
- */
-class ExtraParamsMainViewModelFactory(
-    private val application: MoneyApp,
-    private val myExtraUser: KichtaUserModel
-) : ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        application.container.userRepository?.let { userRepo ->
-            application.container.bankRepository?.let { bankRepo ->
-                MainViewModel(user = myExtraUser, userRepo = userRepo, bankRepo = bankRepo)
-            }
-        } as T
-}
-

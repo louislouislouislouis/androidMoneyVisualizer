@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -18,17 +17,20 @@ import com.plaid.link.result.LinkSuccess
 import com.succiue.myapplication.data.model.KichtaUserModel
 import com.succiue.myapplication.ui.screens.MoneyVisualizerHome
 import com.succiue.myapplication.ui.theme.MyApplicationTheme
-import com.succiue.myapplication.ui.viewmodels.ExtraParamsLoginViewModelFactory
-import com.succiue.myapplication.ui.viewmodels.ExtraParamsMainViewModelFactory
 import com.succiue.myapplication.ui.viewmodels.LoginViewModel
+import com.succiue.myapplication.ui.viewmodels.LoginViewModelFactory
 import com.succiue.myapplication.ui.viewmodels.MainViewModel
+import com.succiue.myapplication.ui.viewmodels.MainViewModelFactory
 import com.succiue.myapplication.utils.getSerializable
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * This Class has to be called with an User
  * This has to be in the parameter of the intent
  */
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
 
@@ -39,20 +41,19 @@ class MainActivity : ComponentActivity() {
 
 
     /**
-     * The loginViewModel of our App
-     */
-    private val loginViewModel: LoginViewModel by viewModels {
-        ExtraParamsLoginViewModelFactory(
-            loginActivity = this,
-        )
-    }
-
-    /**
      * The mainViewModel of our App
      */
-    private val mainAppViewModel: MainViewModel by viewModels {
-        ExtraParamsMainViewModelFactory(application as MoneyApp, user)
-    }
+    @Inject
+    lateinit var mainViewModelFactory: MainViewModelFactory;
+    private lateinit var mainAppViewModel: MainViewModel
+
+    /**
+     * The LoginViewModel of our App
+     */
+    @Inject
+    lateinit var loginViewModelFactory: LoginViewModelFactory;
+    private lateinit var loginViewModel: LoginViewModel
+
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,7 +62,9 @@ class MainActivity : ComponentActivity() {
 
         // Get user variable
         user = intent.getSerializable("user", KichtaUserModel::class.java)
-        app.container.setUser(user)
+        mainAppViewModel = mainViewModelFactory.create(user)
+        loginViewModel = loginViewModelFactory.create(this)
+
         Log.d("MainActivity", "Current KichtaUser is : " + mainAppViewModel.user.toString())
 
         // Define action for activity of Plaid API

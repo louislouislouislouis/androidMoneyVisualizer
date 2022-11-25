@@ -12,9 +12,11 @@ import androidx.lifecycle.lifecycleScope
 import com.succiue.myapplication.ui.screens.SplashScreen
 import com.succiue.myapplication.ui.theme.MyApplicationTheme
 import com.succiue.myapplication.ui.viewmodels.SplashViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class SplaashActivity : ComponentActivity() {
 
     /**
