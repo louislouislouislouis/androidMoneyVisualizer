@@ -35,6 +35,8 @@ import androidx.navigation.compose.rememberNavController
 import com.succiue.myapplication.MainActivity
 import com.succiue.myapplication.R
 import com.succiue.myapplication.ui.screens.bodies.*
+import com.succiue.myapplication.ui.screens.routes.createObjectiveNavigation
+import com.succiue.myapplication.ui.screens.routes.editProfileNavigation
 import com.succiue.myapplication.ui.viewmodels.LoginViewModel
 import com.succiue.myapplication.ui.viewmodels.MainViewModel
 
@@ -124,15 +126,10 @@ fun MoneyVisualizerHome(
             }
         }
     }
-
-    // Connect Account Screen
-
-
 }
 
 
 // Big Screen Screen
-
 @ExperimentalMaterial3Api
 @Composable
 fun AppExpandedWidthNavigation(
@@ -149,7 +146,6 @@ fun AppExpandedWidthNavigation(
                 modifier = modifier,
                 navController = navController,
                 onNavigate = {
-
                 })
         }
     ) {
@@ -157,10 +153,8 @@ fun AppExpandedWidthNavigation(
             navController = navController,
             modifier = modifier,
             onTitleChanged = {
-
             },
             onCanNavigateBackChanged = {
-
             },
             viewModel = viewModel,
             loginViewModel = loginViewModel
@@ -255,7 +249,6 @@ fun AppCompactWidthNavigation(
 
 
     Scaffold(
-
         /*
         topBar = {
             TopBar(
@@ -268,8 +261,8 @@ fun AppCompactWidthNavigation(
             }
 
         },
-
          */
+
         bottomBar = {
             BottomBar(navController, modifier) {
                 currentScreenTitle = it.resourceId
@@ -291,9 +284,6 @@ fun AppCompactWidthNavigation(
 
     }
 }
-
-
-// Common
 
 @Composable
 fun AppBody(
@@ -341,7 +331,12 @@ fun AppBody(
                 },
             )
         }
-        composable(Screen.Goals.route) { GoalsBody(navController) }
+        createObjectiveNavigation(
+            navController = navController,
+            modifier,
+            onTitleChanged = onTitleChanged,
+            onCanNavigateBackChange = onCanNavigateBackChanged
+        )
         composable(Screen.Depenses.route) {
             DepensesBody(
                 navController,
@@ -354,13 +349,13 @@ fun AppBody(
                 onNextButtonClicked2 = {}
             )
         }
-        composable(Screen.Profile.route) {
-            ProfileBody(
-                navController,
-                loginViewModel,
-                name = viewModel.uiState.name
-            )
-        }
+        editProfileNavigation(
+            navController = navController,
+            modifier,
+            onTitleChanged = onTitleChanged,
+            onCanNavigateBackChange = onCanNavigateBackChanged,
+            loginViewModel, name = viewModel.uiState.name
+        )
     }
 }
 
@@ -409,7 +404,6 @@ fun BottomBar(
                 }
             )
         }
-
     }
 }
 
@@ -437,7 +431,6 @@ fun TopBar(
                 }
             }
         },
-
         actions = {
             TopAppBarActionButton(
                 imageVector = Icons.Outlined.Search,
@@ -447,7 +440,6 @@ fun TopBar(
                     .show()
             }
         }
-
     )
 }
 

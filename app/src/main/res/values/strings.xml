@@ -9,6 +9,9 @@
     <string name="home">MoneyApp</string>
     <string name="goals">Mes objectifs</string>
 
-    <string name="toGraph">toGraph</string>
-    <string name="toDepenses">toDepenses</string>
+    <string name="profileScreen">Profil</string>
+    <string name="editProfile">Edit Profile</string>
+
+    <string name="goalScreen">Objectifs</string>
+    <string name="createGoal">Créer un Objectif</string>
 </resources>

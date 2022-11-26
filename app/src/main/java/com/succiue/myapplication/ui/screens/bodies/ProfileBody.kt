@@ -2,7 +2,6 @@ package com.succiue.myapplication.ui.screens.bodies
 
 import android.content.Context
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -10,8 +9,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -21,11 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.succiue.myapplication.R
 import com.succiue.myapplication.ui.viewmodels.LoginViewModel
@@ -33,28 +30,28 @@ import com.succiue.myapplication.ui.viewmodels.LoginViewModel
 
 @Composable
 fun ProfileBody(
-    navController: NavHostController,
+    modifier: Modifier = Modifier,
     viewModel: LoginViewModel,
     context: Context = LocalContext.current.applicationContext,
-    name: String
+    name: String,
+    onNextButtonClicked: () -> Unit
 ) {
     val uiState = viewModel.uiState
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-
         GreetingSection("Profil")
 
-        UserInfos(context = context)
+        UserInfos()
+
+        EditButton(context = context, onNextButtonClicked)
 
         InfoCard(text = name)
 
         InfoCard(text = "Adresse mail")
 
-        Spacer(modifier = Modifier.height(20.dp))
-        
-        Text(text = "Banques", modifier = Modifier.padding(10.dp))
+        Text(text = "Banques", modifier = Modifier.padding(top = 30.dp, bottom = 10.dp))
 
         InfoCard(text = name)
 
@@ -106,8 +103,7 @@ fun BankCard(text: String) {
 }
 
 @Composable
-private fun UserInfos(context: Context) {
-
+fun UserInfos() {
     val imageUri = rememberSaveable {
         mutableStateOf("")
     }
@@ -143,44 +139,50 @@ private fun UserInfos(context: Context) {
             contentDescription = null,
             contentScale = ContentScale.Crop
         )
+    }
+}
 
-        Surface() {
-            Row(
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditButton(context: Context, onNextButtonClicked: () -> Unit) {
+    Card(
+        shape = RoundedCornerShape(20.dp),
+        modifier = Modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.onPrimary
+        ),
+        onClick = onNextButtonClicked
+    ) {
+        Row(
+            modifier = Modifier
+                .wrapContentHeight()
+                .wrapContentWidth()
+                .padding(5.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Text(
+                modifier = Modifier,
+                text = "Edit Profile",
+                style = TextStyle(
+                    fontSize = 15.sp,
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = MaterialTheme.colorScheme.primary,
+            )
+
+            // Edit button
+
+            Icon(
+                painter = painterResource(R.drawable.editer),
                 modifier = Modifier
-                    .wrapContentHeight()
-                    .wrapContentWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Text(
-                    text = "Edit Profile",
-                    style = TextStyle(
-                        fontSize = 15.sp,
-                    ),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.clickable {
-                        Toast.makeText(context, "Edit Button", Toast.LENGTH_SHORT).show()
-                    }
-                )
-
-                // Edit button
-                IconButton(
-                    modifier = Modifier
-                        .weight(weight = 1f, fill = false),
-                    onClick = {
-                        Toast.makeText(context, "Edit Button", Toast.LENGTH_SHORT).show()
-                    }) {
-                    Icon(
-                        modifier = Modifier.size(24.dp),
-                        imageVector = Icons.Outlined.Edit,
-                        contentDescription = "Edit Details",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
+                    .size(24.dp)
+                    .padding(start = 5.dp),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }

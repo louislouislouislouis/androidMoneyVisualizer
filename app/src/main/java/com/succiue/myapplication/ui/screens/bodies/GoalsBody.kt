@@ -11,16 +11,18 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GoalsBody(navController: NavHostController) {
+fun GoalsBody(
+    modifier: Modifier = Modifier,
+    onNextButtonClicked: () -> Unit
+) {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {},
+                onClick = onNextButtonClicked,
                 backgroundColor = androidx.compose.material.MaterialTheme.colors.onPrimary,
                 contentColor = androidx.compose.material.MaterialTheme.colors.onBackground
             )
