@@ -308,19 +308,27 @@ fun AppBody(
     loginViewModel: LoginViewModel
 ) {
     NavHost(
-        navController,
+        navController = navController,
         startDestination = Screen.Home.route,
         Modifier.padding(innerPadding)
     ) {
         composable(Screen.Home.route) {
             HomeBody(
                 navController,
+                listTransaction = viewModel.uiState.transactionList,
                 name = viewModel.uiState.name,
                 totalAmount = viewModel.uiState.totalAmount,
                 currency = viewModel.uiState.currency,
-                listTransaction = viewModel.uiState.transactionList,
-                getBalanceAction = { viewModel.getBalanceInfoFrom() },
-                getTransactionsAction = { viewModel.getTransactionInfoFrom() }
+                onNextClick1 = {
+                    navController.navigate(Screen.Stats.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                    }
+                },
+                onNextClick2 = {
+                    navController.navigate(Screen.Stats.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                    }
+                },
             )
         }
         composable(Screen.Stats.route) {

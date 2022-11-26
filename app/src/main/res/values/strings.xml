@@ -8,4 +8,7 @@
     <string name="stats">Mes dépenses</string>
     <string name="home">MoneyApp</string>
     <string name="goals">Mes objectifs</string>
+
+    <string name="toGraph">toGraph</string>
+    <string name="toDepenses">toDepenses</string>
 </resources>

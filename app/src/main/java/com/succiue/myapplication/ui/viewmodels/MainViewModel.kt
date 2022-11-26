@@ -90,7 +90,7 @@ class MainViewModel @AssistedInject constructor(
             var listForUI: ArrayList<TransactionUiState> = ArrayList()
             val formatters = DateTimeFormatter.ofPattern("d/MM/uuuu")
             accountTR.forEach { trMdl ->
-                if (listForUI.size == 140) return@forEach
+                if (listForUI.size == 100) return@forEach
 
                 println(trMdl.iso_currency_code)
                 println(trMdl.category)

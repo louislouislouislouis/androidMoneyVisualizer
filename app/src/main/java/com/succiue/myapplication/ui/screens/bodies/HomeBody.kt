@@ -3,7 +3,6 @@ package com.succiue.myapplication.ui.screens.bodies
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -18,16 +17,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.succiue.myapplication.R
-import com.succiue.myapplication.ui.theme.MyApplicationTheme
 import com.succiue.myapplication.ui.viewmodels.TransactionUiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -41,10 +38,10 @@ fun HomeBody(
     name: String,
     totalAmount: String,
     currency: String,
-    getBalanceAction: () -> Unit,
-    getTransactionsAction: () -> Unit
+    onNextClick1: () -> Unit,
+    onNextClick2: () -> Unit,
 
-) {
+    ) {
     val refreshScope = rememberCoroutineScope()
     var refreshing by remember { mutableStateOf(false) }
     var itemCount by remember { mutableStateOf(15) }
@@ -64,15 +61,16 @@ fun HomeBody(
                     GreetingSection(name)
                 }
                 item {
-                    TotalSection(totalAmount, currency)
+                    TotalSection(totalAmount, currency, onNextClick1)
                 }
                 item {
-                    GraphSection()
+                    GraphSection(onNextClick2)
                 }
                 item {
                     ListSection(
                         listTransaction = listTransaction,
-                        maxIndex = 8
+                        maxIndex = 7,
+                        onNextClick1
                     )
                 }
             }
@@ -115,19 +113,22 @@ fun GreetingSection(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TotalSection(
     amount: String,
-    currency: String
+    currency: String,
+    onNextButtonClicked: () -> Unit
 ) {
+    val context = LocalContext.current
     ElevatedCard(
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier
-            .padding(top = 5.dp, bottom = 10.dp, start = 10.dp, end = 10.dp)
-            .clickable { },
+            .padding(top = 5.dp, bottom = 10.dp, start = 10.dp, end = 10.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.onPrimary
-        )
+        ),
+        onClick = onNextButtonClicked
     ) {
         Column(
             modifier = Modifier.padding(15.dp),
@@ -145,19 +146,21 @@ fun TotalSection(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GraphSection(
+    onNextButtonClicked: () -> Unit
 ) {
+    val context = LocalContext.current
     ElevatedCard(
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 5.dp, bottom = 10.dp, start = 10.dp, end = 10.dp)
-            .clickable { },
-
+            .padding(top = 5.dp, bottom = 10.dp, start = 10.dp, end = 10.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.onPrimary
-        )
+        ),
+        onClick = onNextButtonClicked
     ) {
         Row(
             modifier = Modifier.padding(10.dp),
@@ -222,19 +225,23 @@ fun LegendCard(text: String) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListSection(
-    listTransaction: List<TransactionUiState>, maxIndex: Int
+    listTransaction: List<TransactionUiState>,
+    maxIndex: Int,
+    onNextButtonClicked: () -> Unit
 ) {
+    val context = LocalContext.current
     var index = 0
     ElevatedCard(
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier
-            .padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
-            .clickable { },
+            .padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 10.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.onPrimary
-        )
+        ),
+        onClick = onNextButtonClicked
     ) {
         Column() {
             Card(
@@ -249,13 +256,16 @@ fun ListSection(
             }
 
             listTransaction.forEach() { transaction ->
-                index += 1
+
                 if (index < maxIndex) {
                     Card(
                         modifier = Modifier
                             .padding(start = 10.dp, end = 10.dp, top = 0.dp, bottom = 10.dp)
                             .fillMaxWidth(),
                         shape = RoundedCornerShape(10.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.onPrimary
+                        )
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -309,51 +319,9 @@ fun ListSection(
                             )
                         }
                     }
-
-
                 }
+                index += 1
             }
-
         }
-    }
-}
-
-
-@Preview(showSystemUi = true)
-@Composable
-fun ComposablePreview() {
-    MyApplicationTheme() {
-        HomeBody(
-            rememberNavController(),
-            name = "Louis LOMBARD",
-            totalAmount = "1234.50",
-            currency = "$",
-            listTransaction = listOf(
-                TransactionUiState(
-                    amount = "-6.33£",
-                    merchant = "Uber",
-                    category = "Travel",
-                    date = "13/11/2022"
-                ), TransactionUiState(
-                    amount = "6.33£",
-                    merchant = "Uber",
-                    category = "Travel",
-                    date = "13/11/2022"
-                ), TransactionUiState(
-                    amount = "-6.33£",
-                    merchant = "Uber",
-                    category = "Travel",
-                    date = "13/11/2022"
-                ), TransactionUiState(
-                    amount = "-6.33£",
-                    merchant = "Uber",
-                    category = "Travel",
-                    date = "13/11/2022"
-                )
-            ),
-            getTransactionsAction = {},
-            getBalanceAction = {}
-        )
-
     }
 }

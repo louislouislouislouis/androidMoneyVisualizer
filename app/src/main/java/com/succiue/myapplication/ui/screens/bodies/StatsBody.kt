@@ -8,10 +8,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,30 +48,39 @@ fun StatsBody(navController: NavHostController, listTransaction: List<Transactio
         Column() {
             LazyColumn(Modifier.fillMaxSize()) {
                 stickyHeader {
-                    GreetingSection("Mes dépenses")
-                    SelectButton(transactionVision)
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    ) {
+                        GreetingSection("Mes dépenses")
+                        SelectButton(transactionVision)
+                    }
                 }
                 if (!transactionVision.value) {
                     item {
-                        GraphSection()
+                        GraphSection(onNextButtonClicked = {})
                     }
                     item {
-                        GraphSection()
+                        GraphSection(onNextButtonClicked = {})
                     }
                     item {
-                        GraphSection()
+                        GraphSection(onNextButtonClicked = {})
                     }
                     item {
-                        GraphSection()
+                        GraphSection(onNextButtonClicked = {})
                     }
                     item {
-                        GraphSection()
+                        GraphSection(onNextButtonClicked = {})
                     }
                 } else {
                     item {
                         ListSection(
                             listTransaction = listTransaction,
-                            maxIndex = listTransaction.size
+                            maxIndex = listTransaction.size,
+                            onNextButtonClicked = {}
                         )
                     }
                 }
