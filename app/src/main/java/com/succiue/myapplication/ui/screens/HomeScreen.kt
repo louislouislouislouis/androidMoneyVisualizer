@@ -34,10 +34,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.succiue.myapplication.MainActivity
 import com.succiue.myapplication.R
-import com.succiue.myapplication.ui.screens.bodies.GoalsBody
-import com.succiue.myapplication.ui.screens.bodies.HomeBody
-import com.succiue.myapplication.ui.screens.bodies.ProfileBody
-import com.succiue.myapplication.ui.screens.bodies.StatsBody
+import com.succiue.myapplication.ui.screens.bodies.*
 import com.succiue.myapplication.ui.viewmodels.LoginViewModel
 import com.succiue.myapplication.ui.viewmodels.MainViewModel
 
@@ -50,6 +47,7 @@ sealed class Screen(
     object Stats : Screen("stats", R.string.stats, R.drawable.data_management)
     object Goals : Screen("goals", R.string.goals, R.drawable.dollar)
     object Profile : Screen("profile", R.string.profile, R.drawable.user)
+    object Depenses : Screen("depenses", R.string.stats, R.drawable.data_management)
 }
 
 val MainScreens = listOf(
@@ -320,7 +318,7 @@ fun AppBody(
                 totalAmount = viewModel.uiState.totalAmount,
                 currency = viewModel.uiState.currency,
                 onNextClick1 = {
-                    navController.navigate(Screen.Stats.route) {
+                    navController.navigate(Screen.Depenses.route) {
                         popUpTo(Screen.Home.route) { inclusive = true }
                     }
                 },
@@ -334,10 +332,28 @@ fun AppBody(
         composable(Screen.Stats.route) {
             StatsBody(
                 navController,
-                listTransaction = viewModel.uiState.transactionList
+                listTransaction = viewModel.uiState.transactionList,
+                onNextButtonClicked = {},
+                onNextButtonClicked2 = {
+                    navController.navigate(Screen.Depenses.route) {
+                        popUpTo(Screen.Stats.route) { inclusive = true }
+                    }
+                },
             )
         }
         composable(Screen.Goals.route) { GoalsBody(navController) }
+        composable(Screen.Depenses.route) {
+            DepensesBody(
+                navController,
+                listTransaction = viewModel.uiState.transactionList,
+                onNextButtonClicked = {
+                    navController.navigate(Screen.Stats.route) {
+                        popUpTo(Screen.Depenses.route) { inclusive = true }
+                    }
+                },
+                onNextButtonClicked2 = {}
+            )
+        }
         composable(Screen.Profile.route) {
             ProfileBody(
                 navController,

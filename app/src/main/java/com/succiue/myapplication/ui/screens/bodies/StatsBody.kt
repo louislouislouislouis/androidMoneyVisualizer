@@ -26,8 +26,12 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun StatsBody(navController: NavHostController, listTransaction: List<TransactionUiState>) {
-    val transactionVision = remember { mutableStateOf(false) }
+fun StatsBody(
+    navController: NavHostController,
+    listTransaction: List<TransactionUiState>,
+    onNextButtonClicked: () -> Unit,
+    onNextButtonClicked2: () -> Unit
+) {
     val refreshScope = rememberCoroutineScope()
     var refreshing by remember { mutableStateOf(false) }
     var itemCount by remember { mutableStateOf(15) }
@@ -56,43 +60,43 @@ fun StatsBody(navController: NavHostController, listTransaction: List<Transactio
                         )
                     ) {
                         GreetingSection("Mes dépenses")
-                        SelectButton(transactionVision)
-                    }
-                }
-                if (!transactionVision.value) {
-                    item {
-                        GraphSection(onNextButtonClicked = {})
-                    }
-                    item {
-                        GraphSection(onNextButtonClicked = {})
-                    }
-                    item {
-                        GraphSection(onNextButtonClicked = {})
-                    }
-                    item {
-                        GraphSection(onNextButtonClicked = {})
-                    }
-                    item {
-                        GraphSection(onNextButtonClicked = {})
-                    }
-                } else {
-                    item {
-                        ListSection(
-                            listTransaction = listTransaction,
-                            maxIndex = listTransaction.size,
-                            onNextButtonClicked = {}
+
+                        SelectButton(
+
+                            false,
+                            onNextButtonClicked,
+                            onNextButtonClicked2
                         )
                     }
                 }
+                item {
+                    GraphSection(onNextButtonClicked = {})
+                }
+                item {
+                    GraphSection(onNextButtonClicked = {})
+                }
+                item {
+                    GraphSection(onNextButtonClicked = {})
+                }
+                item {
+                    GraphSection(onNextButtonClicked = {})
+                }
+                item {
+                    GraphSection(onNextButtonClicked = {})
+                }
+
             }
         }
         PullRefreshIndicator(refreshing, state, Modifier.align(Alignment.TopCenter))
     }
 }
 
-
 @Composable
-fun SelectButton(selected: MutableState<Boolean>) {
+fun SelectButton(
+    selected: Boolean,
+    onNextButtonClicked: () -> Unit,
+    onNextButtonClicked2: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -106,8 +110,8 @@ fun SelectButton(selected: MutableState<Boolean>) {
             paddingBetween = 20.dp
         ) {
             Button(
-                border = BorderStroke(1.dp, if (selected.value) Color.Gray else Color.Blue),
-                onClick = { selected.value = false },
+                border = BorderStroke(1.dp, if (selected) Color.Gray else Color.Blue),
+                onClick = onNextButtonClicked,
                 colors = ButtonDefaults.buttonColors(
                     contentColor = Color.Gray,
                     containerColor = MaterialTheme.colorScheme.onPrimary
@@ -118,8 +122,8 @@ fun SelectButton(selected: MutableState<Boolean>) {
             }
 
             Button(
-                border = BorderStroke(1.dp, if (!selected.value) Color.Gray else Color.Blue),
-                onClick = { selected.value = true },
+                border = BorderStroke(1.dp, if (!selected) Color.Gray else Color.Blue),
+                onClick = onNextButtonClicked2,
                 colors = ButtonDefaults.buttonColors(
                     contentColor = Color.Gray,
                     containerColor = MaterialTheme.colorScheme.onPrimary
