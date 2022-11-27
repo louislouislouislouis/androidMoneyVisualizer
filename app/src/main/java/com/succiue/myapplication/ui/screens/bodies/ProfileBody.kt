@@ -53,7 +53,7 @@ fun ProfileBody(
 
         Text(text = "Banques", modifier = Modifier.padding(top = 30.dp, bottom = 10.dp))
 
-        InfoCard(text = name)
+        BankCard(text = name)
 
         Button(
             enabled = !uiState.loginEnable,
@@ -82,23 +82,26 @@ fun InfoCard(text: String) {
 @Composable
 fun BankCard(text: String) {
     ElevatedCard(
+        shape = RoundedCornerShape(15.dp),
         modifier = Modifier
             .padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
             .fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.onPrimary
+        )
     ) {
-
-
-        Card(
-            shape = RoundedCornerShape(15.dp),
-            modifier = Modifier
-                .fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.onPrimary
+        Row(modifier = Modifier.padding(10.dp)) {
+            Icon(
+                painter = painterResource(id = R.drawable.logo_app_mobile),
+                modifier = Modifier
+                    .size(24.dp),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
             )
-        ) {
+
+            Text(text = text, modifier = Modifier.padding(start = 10.dp))
 
         }
-        Text(text = text, modifier = Modifier.padding(10.dp))
     }
 }
 
@@ -127,18 +130,37 @@ fun UserInfos() {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-// User's image
-        Image(
-            modifier = Modifier
-                .size(150.dp)
-                .clip(shape = CircleShape)
-                .clickable {
-                    launcher.launch("image/*")
-                },
-            painter = painter,//painterResource(id = R.drawable.logo_app_mobile),
-            contentDescription = null,
-            contentScale = ContentScale.Crop
-        )
+        Box() {
+            Image(
+                modifier = Modifier
+                    .size(150.dp)
+                    .clip(shape = CircleShape)
+                    .clickable {
+                        launcher.launch("image/*")
+                    },
+                painter = painter,//painterResource(id = R.drawable.logo_app_mobile),
+                contentDescription = null,
+                contentScale = ContentScale.Crop
+            )
+            Row(
+                modifier = Modifier
+                    .align(Alignment.Center),
+            ) {
+
+                Text(text = "Edit", modifier = Modifier)
+
+                Icon(
+                    painter = painterResource(R.drawable.editer),
+                    modifier = Modifier
+                        .size(24.dp)
+                        .padding(start = 5.dp),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+
+            }
+
+        }
     }
 }
 
@@ -172,8 +194,6 @@ fun EditButton(context: Context, onNextButtonClicked: () -> Unit) {
                 overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.primary,
             )
-
-            // Edit button
 
             Icon(
                 painter = painterResource(R.drawable.editer),

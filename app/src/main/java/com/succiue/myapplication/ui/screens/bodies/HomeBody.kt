@@ -208,16 +208,14 @@ fun LegendCard(text: String) {
         Card(
             shape = CircleShape,
             modifier = Modifier
-                .size(15.dp),
+                .size(15.dp)
+                .padding(end = 5.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.secondary
             )
         ) {
 
         }
-
-        Spacer(modifier = Modifier.width(5.dp))
-
         Text(
             text = text,
             style = MaterialTheme.typography.bodyMedium
@@ -260,63 +258,63 @@ fun ListSection(
                 if (index < maxIndex) {
                     Card(
                         modifier = Modifier
-                            .padding(start = 10.dp, end = 10.dp, top = 0.dp, bottom = 10.dp)
+                            .padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp)
                             .fillMaxWidth(),
                         shape = RoundedCornerShape(10.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.onPrimary
                         )
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                        ) {
-                            Text(
-                                text = transaction.amount,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 15.sp,
-                                color = if (transaction.amount.startsWith("-")) {
-                                    MaterialTheme.colorScheme.error
-                                } else {
-                                    MaterialTheme.colorScheme.inversePrimary
-                                },
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .width(80.dp)
-                            )
-
-                            Spacer(modifier = Modifier.width(10.dp))
-
-                            Text(
-                                text = transaction.merchant,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 10.sp,
+                        Column() {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .weight(1f)
-                                    .fillMaxHeight()
-                            )
-                            Text(
-                                text = transaction.date,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 10.sp,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(1f)
-                                    .fillMaxHeight()
-                            )
-                            Text(
-                                text = transaction.category,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 10.sp,
-                                textAlign = TextAlign.End,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(1f)
-                                    .fillMaxHeight()
-                            )
+                                    .padding(8.dp)
+                            ) {
+                                Text(
+                                    text = transaction.amount,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 15.sp,
+                                    color = if (transaction.amount.startsWith("-")) {
+                                        MaterialTheme.colorScheme.error
+                                    } else {
+                                        MaterialTheme.colorScheme.inversePrimary
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .width(80.dp)
+                                )
+                                Text(
+                                    text = transaction.merchant,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 10.sp,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f)
+                                        .fillMaxHeight()
+                                        .padding(start = 10.dp)
+                                )
+                                Text(
+                                    text = transaction.date,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 10.sp,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f)
+                                        .fillMaxHeight()
+                                )
+                                Text(
+                                    text = transaction.category,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 10.sp,
+                                    textAlign = TextAlign.End,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f)
+                                        .fillMaxHeight()
+                                )
+                            }
                         }
                     }
                 }
