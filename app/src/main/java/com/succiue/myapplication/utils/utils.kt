@@ -90,7 +90,7 @@ object Constant {
         "473823468553-12tebj7jftchaasckr19oveqd8fsos1o.apps.googleusercontent.com"
     const val CODE_GOOGLE_RC_SIGN_IN = 3
     const val CODE_GOOGLE_REQ_ONE_TAP = 2
-    const val URL_BANK = "https://bankbackuqac.herokuapp.com/"
+    const val URL_BANK = "https://test-back-24ts.onrender.com/"
 
 }
 
