@@ -56,6 +56,7 @@ class MainViewModel @AssistedInject constructor(
     private val bankRepo: BankRepository = DefaultBankRepo(user)
 
     fun getBalanceInfoFrom() {
+        Log.d("MainViewModel", "getBalanceInfoFrom: HEEEEEE")
         viewModelScope.launch {
             val accountInfo = userRepo.getBalance()
             var totalAmount: Double = 0.0
@@ -84,6 +85,7 @@ class MainViewModel @AssistedInject constructor(
     }
 
     fun getTransactionInfoFrom() {
+        Log.d("MainViewModel", "getTransactionInfoFrom: HEEEEEE")
         viewModelScope.launch {
             val accountTR = userRepo.getTransactions()
             Log.d("MainViewModel", "Voila les tran$accountTR")

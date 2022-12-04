@@ -90,8 +90,9 @@ class MainActivity : ComponentActivity() {
             lifecycleScope.launch {
                 mainAppViewModel.getAccessToken()
             }
+            Log.d("HEUUU", "HEUUU")
         }
-
+        Log.d("HEUUU", "HEUUU2")
         setContent {
             MyApplicationTheme {
                 // A surface container using the 'background' color from the theme
