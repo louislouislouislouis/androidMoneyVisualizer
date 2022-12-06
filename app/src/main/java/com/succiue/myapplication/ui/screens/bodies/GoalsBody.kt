@@ -52,6 +52,9 @@ fun GoalsBody(
                 Button(onClick = { ObjectifViewModel.test() }) {
                     Text("TEST")
                 }
+                Button(onClick = { ObjectifViewModel.test2() }) {
+                    Text("TEST2")
+                }
                 LazyColumn() {
                     items(count = objList.value.size,
                         contentType = {

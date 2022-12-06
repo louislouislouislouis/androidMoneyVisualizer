@@ -35,4 +35,12 @@ class ObjectifViewModel @Inject constructor(private val repo: ObjectifRepository
         }
 
     }
+
+    fun test2() {
+        viewModelScope.launch {
+            Log.d("TEST", "")
+            repo.put()
+        }
+
+    }
 }

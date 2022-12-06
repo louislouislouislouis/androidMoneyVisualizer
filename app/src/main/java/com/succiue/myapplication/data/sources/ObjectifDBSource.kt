@@ -31,7 +31,7 @@ interface ObjectifSource {
 
 object ObjectifDBSource : ObjectifSource {
 
-    private var appDatabase: AppDatabase
+    var appDatabase: AppDatabase
 
     init {
         val appContext = MoneyApp.getContext()
