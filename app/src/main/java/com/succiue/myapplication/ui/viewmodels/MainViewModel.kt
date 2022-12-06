@@ -13,19 +13,14 @@ import com.plaid.link.result.LinkSuccess
 import com.succiue.myapplication.data.model.BankCredentialsModel
 import com.succiue.myapplication.data.model.BankUserModel
 import com.succiue.myapplication.data.model.KichtaUserModel
-import com.succiue.myapplication.data.repository.BankRepository
 import com.succiue.myapplication.data.repository.DefaultBankRepo
 import com.succiue.myapplication.data.repository.DefaultUserRepository
-import com.succiue.myapplication.data.repository.UserRepository
-import com.succiue.myapplication.utils.multipleNonNull
+import com.succiue.myapplication.domain.GetTransactionUseCase
+import com.succiue.myapplication.domain.GetUserUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.*
-import java.util.Currency.getInstance
 
 data class TransactionUiState(
     val amount: String,
@@ -52,75 +47,18 @@ class MainViewModel @AssistedInject constructor(
     @Assisted var user: KichtaUserModel,
 ) : ViewModel() {
 
-    private val userRepo: UserRepository = DefaultUserRepository(user)
-    private val bankRepo: BankRepository = DefaultBankRepo(user)
+    private val moneyData: GetTransactionUseCase =
+        GetTransactionUseCase(DefaultUserRepository(user), DefaultBankRepo(user))
 
-    fun getBalanceInfoFrom() {
-        Log.d("MainViewModel", "getBalanceInfoFrom: HEEEEEE")
-        viewModelScope.launch {
-            val accountInfo = userRepo.getBalance()
-            var totalAmount: Double = 0.0
-            var currency: Currency? = null
-
-            accountInfo.forEach { accountMdl ->
-                currency?.let { curr ->
-                    if (getInstance(accountMdl.balances.iso_currency_code) == curr) {
-                        totalAmount += accountMdl.balances.available!!
-                    }
-                } ?: run {
-                    currency = getInstance(accountMdl.balances.iso_currency_code)
-                }
-            }
-
-            var totalString = ""
-            var currencyString = ""
-            currency?.let { curr ->
-                currencyString = curr.symbol.toString()
-                totalString = String.format("%.2f", totalAmount)
-            }
-            uiState = uiState.copy(totalAmount = totalString, currency = currencyString)
-
-            Log.d("MainViewModel", "Voila les balance$accountInfo")
-        }
+    private val userData: GetUserUseCase =
+        GetUserUseCase(DefaultUserRepository(user), DefaultBankRepo(user))
+    
+    private suspend fun getBalanceInfoFrom() {
+        uiState = moneyData.getBalance(uiState)
     }
 
-    fun getTransactionInfoFrom() {
-        Log.d("MainViewModel", "getTransactionInfoFrom: HEEEEEE")
-        viewModelScope.launch {
-            val accountTR = userRepo.getTransactions()
-            Log.d("MainViewModel", "Voila les tran$accountTR")
-            var listForUI: ArrayList<TransactionUiState> = ArrayList()
-            val formatters = DateTimeFormatter.ofPattern("d/MM/uuuu")
-            accountTR.forEach { trMdl ->
-                if (listForUI.size == 100) return@forEach
-
-                println(trMdl.iso_currency_code)
-                println(trMdl.category)
-                println(trMdl.authorized_date)
-                println("")
-
-                multipleNonNull(
-                    trMdl.iso_currency_code,
-                    trMdl.category,
-                    trMdl.authorized_date
-                ) { iso, cat, date ->
-                    var date = LocalDate.parse(date).format(formatters)
-                    listForUI.add(
-                        TransactionUiState(
-                            amount = String.format(
-                                "%.2f",
-                                -1 * trMdl.amount
-                            ) + getInstance(iso).symbol.toString(),
-                            merchant = trMdl.merchant_name?.let { it } ?: "Unknown",
-                            category = cat.first(),
-                            date = date
-                        )
-                    )
-                }
-                uiState = uiState.copy(transactionList = listForUI.toList())
-
-            }
-        }
+    private suspend fun getTransactionInfoFrom() {
+        uiState = moneyData.getTransaction(uiState)
     }
 
     var uiState by mutableStateOf(
@@ -148,7 +86,7 @@ class MainViewModel @AssistedInject constructor(
         credentialsBank.publicToken = publicTokenValue
         viewModelScope.launch {
             try {
-                bankRepo.getBankAccessToken(credentialsBank).accessToken?.let { token ->
+                userData.getBankAccessToken(credentialsBank).accessToken?.let { token ->
                     var bankUser = BankUserModel(bankToken = token)
                     Log.d("MainViewModel", "Create UserBank ")
                     getTransactionInfoFrom()
@@ -172,7 +110,7 @@ class MainViewModel @AssistedInject constructor(
     fun connectToBank() {
         linkAccountToPlaid?.let { linkPlaid ->
             viewModelScope.launch {
-                var cred = bankRepo.getBankLinkToken()
+                var cred = userData.getBankLinkToken()
 
                 val linkTokenConfiguration = linkTokenConfiguration {
                     token = cred.linkToken
@@ -195,7 +133,7 @@ class MainViewModel @AssistedInject constructor(
             Log.d("MainViewModel", "HOOO")
             var bankUser: BankUserModel? = null
             try {
-                bankUser = userRepo.getUser()
+                bankUser = userData.getUser()
                 Log.d("MainViewModel", "Bank user : $bankUser")
 
             } catch (e: Exception) {
