@@ -34,6 +34,7 @@ import retrofit2.http.POST
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 @Dao
 interface ObjectifDao {
     @Query("SELECT * FROM objectif")
@@ -114,6 +115,7 @@ class ObjectifOnlineSource(user: KichtaUserModel) : ObjectifSource {
 
 }
 
+
 class ObjectifDBSource() : ObjectifSource {
 
     var appDatabase: AppDatabase
@@ -128,7 +130,6 @@ class ObjectifDBSource() : ObjectifSource {
             }
         appDatabase = utilitiesEntryPoint?.appDatabase!!
     }
-
 
     override suspend fun getObjectifs(): Flow<List<Objectif>> {
         return appDatabase.objectifDao().getAll()

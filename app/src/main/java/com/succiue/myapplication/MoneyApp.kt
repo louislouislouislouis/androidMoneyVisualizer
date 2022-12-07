@@ -7,6 +7,7 @@ import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class MoneyApp : Application() {
+
     companion object {
         private var sApplication: Application? = null
 
@@ -19,9 +20,11 @@ class MoneyApp : Application() {
         }
     }
 
+
     val database: AppDatabase by lazy { AppDatabase.getDatabase(this) }
     override fun onCreate() {
         super.onCreate()
         sApplication = this
+
     }
 }
