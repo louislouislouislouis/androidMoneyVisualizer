@@ -13,7 +13,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-@Database(entities = [Objectif::class], version = 1)
+@Database(entities = [Objectif::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun objectifDao(): ObjectifDao
 
@@ -27,7 +27,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context,
                     AppDatabase::class.java,
                     "succieu_database"
-                ).build()
+                ).fallbackToDestructiveMigration().build()
                 INSTANCE = instance
 
                 instance

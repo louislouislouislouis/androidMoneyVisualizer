@@ -10,6 +10,7 @@ import com.succiue.myapplication.R
 import com.succiue.myapplication.ui.screens.Screen
 import com.succiue.myapplication.ui.screens.bodies.CreateGoalsBody
 import com.succiue.myapplication.ui.screens.bodies.GoalsBody
+import com.succiue.myapplication.ui.viewmodels.ObjectifViewModel
 
 enum class AddObjectiveRoutes(@StringRes val title: Int) {
     StartGoal(R.string.goalScreen),
@@ -20,6 +21,7 @@ fun NavGraphBuilder.createObjectiveNavigation(
     navController: NavController,
     modifier: Modifier = Modifier,
     onTitleChanged: (Int) -> Unit,
+    objectifViewModel: ObjectifViewModel,
     onCanNavigateBackChange: (Boolean) -> Unit,
 ) {
     navigation(startDestination = AddObjectiveRoutes.StartGoal.name, route = Screen.Goals.route) {
@@ -27,6 +29,7 @@ fun NavGraphBuilder.createObjectiveNavigation(
             onCanNavigateBackChange(false)
             GoalsBody(
                 modifier,
+                objectifViewModel = objectifViewModel,
                 onNextButtonClicked = {
                     navController.navigate(AddObjectiveRoutes.CreateObjective.name)
                 },

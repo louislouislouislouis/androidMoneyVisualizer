@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.succiue.myapplication.ui.viewmodels.ObjectifViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -22,9 +21,9 @@ import com.succiue.myapplication.ui.viewmodels.ObjectifViewModel
 fun GoalsBody(
     modifier: Modifier = Modifier,
     onNextButtonClicked: () -> Unit,
-    ObjectifViewModel: ObjectifViewModel = hiltViewModel()
+    objectifViewModel: ObjectifViewModel
 ) {
-    val objList = ObjectifViewModel.uiState.collectAsState()
+    val objList = objectifViewModel.uiState.collectAsState()
 
     Scaffold(
         floatingActionButton = {
@@ -49,11 +48,11 @@ fun GoalsBody(
                 GoalFragment(goalName = "Fast Food")
 
                 GoalFragment(goalName = "Bar / Pub")
-                Button(onClick = { ObjectifViewModel.test() }) {
-                    Text("TEST")
+                Button(onClick = { objectifViewModel.test() }) {
+                    Text("GET DATA FROM WEB AND SYNC")
                 }
-                Button(onClick = { ObjectifViewModel.test2() }) {
-                    Text("TEST2")
+                Button(onClick = { objectifViewModel.test2() }) {
+                    Text("PUT DUMMY OBJ IN DB")
                 }
                 LazyColumn() {
                     items(count = objList.value.size,

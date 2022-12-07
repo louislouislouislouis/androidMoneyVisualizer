@@ -17,10 +17,7 @@ import com.plaid.link.result.LinkSuccess
 import com.succiue.myapplication.data.model.KichtaUserModel
 import com.succiue.myapplication.ui.screens.MoneyVisualizerHome
 import com.succiue.myapplication.ui.theme.MyApplicationTheme
-import com.succiue.myapplication.ui.viewmodels.LoginViewModel
-import com.succiue.myapplication.ui.viewmodels.LoginViewModelFactory
-import com.succiue.myapplication.ui.viewmodels.MainViewModel
-import com.succiue.myapplication.ui.viewmodels.MainViewModelFactory
+import com.succiue.myapplication.ui.viewmodels.*
 import com.succiue.myapplication.utils.getSerializable
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -54,6 +51,13 @@ class MainActivity : ComponentActivity() {
     lateinit var loginViewModelFactory: LoginViewModelFactory;
     private lateinit var loginViewModel: LoginViewModel
 
+    /**
+     * The ObjectifViewModel of our App
+     */
+    @Inject
+    lateinit var ObjectifViewModelFactory: ObjectifViewModelFactory;
+    private lateinit var objectifViewModel: ObjectifViewModel
+
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,6 +68,7 @@ class MainActivity : ComponentActivity() {
         user = intent.getSerializable("user", KichtaUserModel::class.java)
         mainAppViewModel = mainViewModelFactory.create(user)
         loginViewModel = loginViewModelFactory.create(this)
+        objectifViewModel = ObjectifViewModelFactory.create(user)
 
         Log.d("MainActivity", "Current KichtaUser is : " + mainAppViewModel.user.toString())
 
@@ -102,6 +107,7 @@ class MainActivity : ComponentActivity() {
                     MoneyVisualizerHome(
                         mainAppViewModel,
                         loginViewModel,
+                        objectifViewModel,
                         calculateWindowSizeClass(this)
                     )
                 }

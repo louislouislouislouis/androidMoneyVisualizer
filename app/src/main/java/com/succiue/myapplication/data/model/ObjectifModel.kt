@@ -7,7 +7,8 @@ import java.util.*
 @Entity
 @TypeConverters(Converters::class)
 data class Objectif(
-    @PrimaryKey val userId: String,
+    @PrimaryKey val id: String,
+    @ColumnInfo(name = "userId") val userId: String,
     @ColumnInfo(name = "startDate") val startDate: Date,
     @ColumnInfo(name = "endDate") val endDate: Date,
     @ColumnInfo(name = "category") val category: List<String>,

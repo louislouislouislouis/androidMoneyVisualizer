@@ -1,14 +1,17 @@
 package com.succiue.myapplication.ui.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.succiue.myapplication.data.repository.ObjectifRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.succiue.myapplication.data.model.KichtaUserModel
+import com.succiue.myapplication.data.model.Objectif
+import com.succiue.myapplication.data.repository.DefaultObjectifRepository
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import java.util.*
 
 
 data class ObjectifUiState(
@@ -16,14 +19,20 @@ data class ObjectifUiState(
 )
 
 
-@HiltViewModel
-class ObjectifViewModel @Inject constructor(private val repo: ObjectifRepository) : ViewModel() {
+@AssistedFactory
+interface ObjectifViewModelFactory {
+    fun create(user: KichtaUserModel): ObjectifViewModel
+}
+
+class ObjectifViewModel @AssistedInject constructor(
+    @Assisted var user: KichtaUserModel,
+) : ViewModel() {
+    private val repo = DefaultObjectifRepository(user)
     private val _uiState = MutableStateFlow(listOf<ObjectifUiState>())
     val uiState: StateFlow<List<ObjectifUiState>> = _uiState
 
     fun test() {
         viewModelScope.launch {
-            Log.d("TEST", "dzazdzad")
             var test = repo.getObjectifs()
             test.collect { list ->
                 val listUi = list.map {
@@ -31,15 +40,24 @@ class ObjectifViewModel @Inject constructor(private val repo: ObjectifRepository
                 }
                 _uiState.emit(listUi)
             }
-            Log.d("TEST", "$test")
         }
 
     }
 
     fun test2() {
         viewModelScope.launch {
-            Log.d("TEST", "")
-            repo.put()
+            repo.put(
+                listOf(
+                    Objectif(
+                        "1",
+                        user.idKichta,
+                        Date(),
+                        Date(),
+                        listOf("Test"),
+                        1.0
+                    )
+                )
+            )
         }
 
     }

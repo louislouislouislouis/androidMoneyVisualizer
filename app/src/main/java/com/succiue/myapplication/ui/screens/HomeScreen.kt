@@ -39,6 +39,7 @@ import com.succiue.myapplication.ui.screens.routes.createObjectiveNavigation
 import com.succiue.myapplication.ui.screens.routes.editProfileNavigation
 import com.succiue.myapplication.ui.viewmodels.LoginViewModel
 import com.succiue.myapplication.ui.viewmodels.MainViewModel
+import com.succiue.myapplication.ui.viewmodels.ObjectifViewModel
 
 sealed class Screen(
     val route: String,
@@ -71,6 +72,7 @@ fun Context.findActivity(): MainActivity? = when (this) {
 fun MoneyVisualizerHome(
     viewModel: MainViewModel,
     loginViewModel: LoginViewModel,
+    objectifViewModel: ObjectifViewModel,
     windowsSize: WindowSizeClass,
     modifier: Modifier = Modifier,
 ) {
@@ -96,6 +98,7 @@ fun MoneyVisualizerHome(
                         modifier,
                         navController = navController,
                         viewModel = viewModel,
+                        objectifViewModel = objectifViewModel,
                         loginViewModel = loginViewModel
                     )
                 }
@@ -104,6 +107,7 @@ fun MoneyVisualizerHome(
                         modifier,
                         navController = navController,
                         viewModel = viewModel,
+                        objectifViewModel = objectifViewModel,
                         loginViewModel = loginViewModel
                     )
                 }
@@ -112,6 +116,7 @@ fun MoneyVisualizerHome(
                         modifier,
                         navController = navController,
                         viewModel = viewModel,
+                        objectifViewModel = objectifViewModel,
                         loginViewModel = loginViewModel
                     )
                 }
@@ -120,6 +125,7 @@ fun MoneyVisualizerHome(
                         modifier,
                         navController = navController,
                         viewModel = viewModel,
+                        objectifViewModel = objectifViewModel,
                         loginViewModel = loginViewModel
                     )
                 }
@@ -135,6 +141,7 @@ fun MoneyVisualizerHome(
 fun AppExpandedWidthNavigation(
     modifier: Modifier = Modifier,
     navController: NavHostController,
+    objectifViewModel: ObjectifViewModel,
     viewModel: MainViewModel,
     loginViewModel: LoginViewModel
 ) {
@@ -156,6 +163,7 @@ fun AppExpandedWidthNavigation(
             },
             onCanNavigateBackChanged = {
             },
+            objectifViewModel = objectifViewModel,
             viewModel = viewModel,
             loginViewModel = loginViewModel
         )
@@ -232,6 +240,7 @@ private fun NavigationDrawerContent(
 fun AppCompactWidthNavigation(
     modifier: Modifier = Modifier,
     navController: NavHostController,
+    objectifViewModel: ObjectifViewModel,
     viewModel: MainViewModel,
     loginViewModel: LoginViewModel,
 ) {
@@ -279,7 +288,8 @@ fun AppCompactWidthNavigation(
                 canNavigateBack = it
             },
             viewModel = viewModel,
-            loginViewModel = loginViewModel
+            loginViewModel = loginViewModel,
+            objectifViewModel = objectifViewModel
         )
 
     }
@@ -293,6 +303,7 @@ fun AppBody(
     onTitleChanged: (Int) -> Unit,
     onCanNavigateBackChanged: (Boolean) -> Unit,
     viewModel: MainViewModel,
+    objectifViewModel: ObjectifViewModel,
     loginViewModel: LoginViewModel
 ) {
     NavHost(
@@ -332,8 +343,9 @@ fun AppBody(
             )
         }
         createObjectiveNavigation(
+            objectifViewModel = objectifViewModel,
             navController = navController,
-            modifier,
+            modifier = modifier,
             onTitleChanged = onTitleChanged,
             onCanNavigateBackChange = onCanNavigateBackChanged
         )
