@@ -1,8 +1,7 @@
 package com.succiue.myapplication.ui.screens.bodies
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import android.widget.Toast
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -15,10 +14,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -64,7 +64,10 @@ fun HomeBody(
                     TotalSection(totalAmount, currency, onNextClick1)
                 }
                 item {
-                    GraphSection(onNextClick2)
+                    GraphSection(
+                        listTransaction = listTransaction,
+                        onNextClick2
+                    )
                 }
                 item {
                     ListSection(
@@ -149,8 +152,44 @@ fun TotalSection(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GraphSection(
+    listTransaction: List<TransactionUiState>,
     onNextButtonClicked: () -> Unit
 ) {
+    var data: MutableMap<String, Float> = mutableMapOf(
+        stringResource(R.string.january) to 0.0f,
+        stringResource(R.string.February) to 0.0f,
+        stringResource(R.string.March) to 0.0f,
+        stringResource(R.string.April) to 0.0f,
+        stringResource(R.string.May) to 0.0f,
+        stringResource(R.string.June) to 0.0f,
+        stringResource(R.string.July) to 0.0f,
+        stringResource(R.string.August) to 0.0f,
+        stringResource(R.string.September) to 0.0f,
+        stringResource(R.string.October) to 0.0f,
+        stringResource(R.string.November) to 0.0f,
+        stringResource(R.string.December) to 0.0f,
+    )
+
+    var max_value = 0.0f
+    var new_value = 0.0f
+
+    listTransaction.forEach {
+        if (it.date.substring(3, 5) == "01") {
+            new_value = data.getValue(stringResource(R.string.january)) - it.amount.substring(
+                0,
+                it.amount.length - 1
+            ).toFloat()
+            data.put(
+                stringResource(R.string.january),
+                new_value
+            )
+        }
+
+        if (new_value > max_value) {
+            max_value = new_value
+        }
+    }
+
     val context = LocalContext.current
     ElevatedCard(
         shape = RoundedCornerShape(20.dp),
@@ -162,40 +201,10 @@ fun GraphSection(
         ),
         onClick = onNextButtonClicked
     ) {
-        Row(
-            modifier = Modifier.padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Surface(Modifier.padding(5.dp)) {
-                Image(
-                    painter = painterResource(R.drawable.logo_app_mobile),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .size(200.dp)
-                        .background(MaterialTheme.colorScheme.onPrimary),
-
-                    )
-            }
-
-            Column(
-                modifier = Modifier
-                    .padding(15.dp)
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-
-            ) {
-                LegendCard(text = "Votre solde")
-                LegendCard(text = "Votre solde")
-                LegendCard(text = "Votre solde")
-                LegendCard(text = "Votre solde")
-                LegendCard(text = "Votre solde")
-                LegendCard(text = "Votre solde")
-                LegendCard(text = "Votre solde")
-            }
-        }
+        BarChart(
+            data = data,
+            max_value = max_value.toInt()
+        )
     }
 }
 
@@ -222,6 +231,106 @@ fun LegendCard(text: String) {
         )
     }
 }
+
+@Composable
+fun BarChart(
+    data: MutableMap<String, Float>,
+    max_value: Int
+) {
+    val context = LocalContext.current
+
+    Column(
+        modifier = Modifier
+            .padding(20.dp)
+            .fillMaxSize()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.Start
+        ) {
+
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(50.dp),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+
+                // scale
+                Column(
+                    modifier = Modifier.fillMaxHeight(),
+                    verticalArrangement = Arrangement.Bottom
+                ) {
+                    Text(text = max_value.toString())
+                    Spacer(modifier = Modifier.fillMaxHeight())
+                }
+
+                Column(
+                    modifier = Modifier.fillMaxHeight(),
+                    verticalArrangement = Arrangement.Bottom
+                ) {
+                    Text(text = (max_value / 2).toString())
+                    Spacer(modifier = Modifier.fillMaxHeight(0.5f))
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(2.dp)
+                    .background(Color.Black)
+            )
+
+            // graph
+            data.values.forEach {
+                Box(
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .width(12.dp)
+                        .fillMaxHeight(it)
+                        .background(MaterialTheme.colorScheme.primary)
+                        .clickable {
+                            Toast
+                                .makeText(
+                                    context,
+                                    (it * max_value).toString(),
+                                    Toast.LENGTH_SHORT
+                                )
+                                .show()
+                        }
+                )
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(2.dp)
+                .background(Color.Black)
+        )
+
+        Row(
+            modifier = Modifier
+                .padding(start = 64.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            data.keys.forEach {
+                Text(
+                    modifier = Modifier.width(12.dp),
+                    text = it.substring(0, 1),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

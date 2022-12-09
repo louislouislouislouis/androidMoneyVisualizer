@@ -70,19 +70,10 @@ fun StatsBody(
                     }
                 }
                 item {
-                    GraphSection(onNextButtonClicked = {})
-                }
-                item {
-                    GraphSection(onNextButtonClicked = {})
-                }
-                item {
-                    GraphSection(onNextButtonClicked = {})
-                }
-                item {
-                    GraphSection(onNextButtonClicked = {})
-                }
-                item {
-                    GraphSection(onNextButtonClicked = {})
+                    GraphSection(
+                        listTransaction = listTransaction,
+                        onNextButtonClicked = {}
+                    )
                 }
 
             }

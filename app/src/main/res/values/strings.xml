@@ -14,4 +14,16 @@
 
     <string name="goalScreen">Objectifs</string>
     <string name="createGoal">Créer un Objectif</string>
+    <string name="january">Janvier</string>
+    <string name="February">Février</string>
+    <string name="June">Juin</string>
+    <string name="July">Juillet</string>
+    <string name="August">Août</string>
+    <string name="September">Septembre</string>
+    <string name="October">Octobre</string>
+    <string name="November">Novembre</string>
+    <string name="December">Décembre</string>
+    <string name="March">Mars</string>
+    <string name="April">Avril</string>
+    <string name="May">Mai</string>
 </resources>
