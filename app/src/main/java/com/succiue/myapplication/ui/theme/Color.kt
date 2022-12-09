@@ -66,6 +66,19 @@ val md_theme_dark_surfaceTint = Color(0xFFD0BCFF)
 val md_theme_dark_outlineVariant = Color(0xFF49454F)
 val md_theme_dark_scrim = Color(0xFF000000)
 
-val Teal200 = Color(0xFFD0BCFF)
+val Teal200 = Color(0xFFD0BCF5)
 
 val seed = Color(0xFF6750A4)
+
+val MainColor_1 = Color(0xFF5BECDD)
+val InterColor12_1 = Color(0xFFB6EDFF)
+val InterColor12_2 = Color(0xFF5181E0)
+val MainColor_2 = Color(0xFF4E60E2)
+val InterColor23_1 = Color(0xFF8A63B7)
+val InterColor23_2 = Color(0xFFC9678B)
+val MainColor_3 = Color(0xFFFA6A69)
+val InterColor31_1 = Color(0xFFC59893)
+val InterColor31_2 = Color(0xFFA4C3B9)
+
+
+

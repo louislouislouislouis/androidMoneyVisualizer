@@ -1,8 +1,6 @@
 package com.succiue.myapplication.ui.screens.bodies
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -16,7 +14,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.succiue.myapplication.R
+import com.succiue.myapplication.ui.theme.*
 import com.succiue.myapplication.ui.viewmodels.TransactionUiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -64,7 +62,7 @@ fun HomeBody(
                     TotalSection(totalAmount, currency, onNextClick1)
                 }
                 item {
-                    GraphSection(onNextClick2)
+                    GraphSection(onNextClick2, listTransaction = listTransaction)
                 }
                 item {
                     ListSection(
@@ -140,7 +138,8 @@ fun TotalSection(
             )
             Text(
                 text = "$amount $currency",
-                style = MaterialTheme.typography.headlineLarge
+                style = MaterialTheme.typography.headlineLarge,
+                color = MainColor_2
             )
         }
     }
@@ -149,7 +148,8 @@ fun TotalSection(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GraphSection(
-    onNextButtonClicked: () -> Unit
+    onNextButtonClicked: () -> Unit,
+    listTransaction: List<TransactionUiState>
 ) {
     val context = LocalContext.current
     ElevatedCard(
@@ -162,45 +162,25 @@ fun GraphSection(
         ),
         onClick = onNextButtonClicked
     ) {
-        Row(
-            modifier = Modifier.padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Surface(Modifier.padding(5.dp)) {
-                Image(
-                    painter = painterResource(R.drawable.logo_app_mobile),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .size(200.dp)
-                        .background(MaterialTheme.colorScheme.onPrimary),
-
-                    )
-            }
-
-            Column(
-                modifier = Modifier
-                    .padding(15.dp)
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-
-            ) {
-                LegendCard(text = "Votre solde")
-                LegendCard(text = "Votre solde")
-                LegendCard(text = "Votre solde")
-                LegendCard(text = "Votre solde")
-                LegendCard(text = "Votre solde")
-                LegendCard(text = "Votre solde")
-                LegendCard(text = "Votre solde")
-            }
-        }
+        MyPieChart(
+            listTransaction = listTransaction,
+            colors = listOf(
+                MainColor_1,
+                InterColor23_1,
+                MainColor_2,
+                InterColor31_1,
+                MainColor_3,
+                InterColor12_2,
+                InterColor23_2,
+                InterColor12_1,
+                InterColor31_2
+            )
+        )
     }
 }
 
 @Composable
-fun LegendCard(text: String) {
+fun LegendCard(text: String, color: Color) {
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
@@ -211,7 +191,7 @@ fun LegendCard(text: String) {
                 .size(15.dp)
                 .padding(end = 5.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondary
+                containerColor = color
             )
         ) {
 
@@ -277,9 +257,9 @@ fun ListSection(
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 15.sp,
                                     color = if (transaction.amount.startsWith("-")) {
-                                        MaterialTheme.colorScheme.error
+                                        MainColor_3
                                     } else {
-                                        MaterialTheme.colorScheme.inversePrimary
+                                        MainColor_2
                                     },
                                     modifier = Modifier
                                         .fillMaxHeight()
