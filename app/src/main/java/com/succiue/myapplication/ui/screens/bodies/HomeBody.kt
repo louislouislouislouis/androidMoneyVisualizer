@@ -1,6 +1,9 @@
 package com.succiue.myapplication.ui.screens.bodies
 
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -13,9 +16,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -24,6 +29,8 @@ import androidx.navigation.NavHostController
 import com.succiue.myapplication.R
 import com.succiue.myapplication.ui.theme.*
 import com.succiue.myapplication.ui.viewmodels.TransactionUiState
+import com.succiue.myapplication.utils.getMaxValue
+import com.succiue.myapplication.utils.getSpendingByMonth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -301,5 +308,146 @@ fun ListSection(
                 index += 1
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BarPieSection(
+    listTransaction: List<TransactionUiState>,
+    onNextButtonClicked: () -> Unit
+) {
+    var data: MutableMap<String, Float> = mutableMapOf(
+        stringResource(R.string.January) to 0.0f,
+        stringResource(R.string.February) to 0.0f,
+        stringResource(R.string.March) to 0.0f,
+        stringResource(R.string.April) to 0.0f,
+        stringResource(R.string.May) to 0.0f,
+        stringResource(R.string.June) to 0.0f,
+        stringResource(R.string.July) to 0.0f,
+        stringResource(R.string.August) to 0.0f,
+        stringResource(R.string.September) to 0.0f,
+        stringResource(R.string.October) to 0.0f,
+        stringResource(R.string.November) to 0.0f,
+        stringResource(R.string.December) to 0.0f,
+    )
+
+    getSpendingByMonth(listTransaction, data)
+    var max_value = getMaxValue(data.maxOf { it.value })
+
+    val context = LocalContext.current
+    ElevatedCard(
+        shape = RoundedCornerShape(20.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 5.dp, bottom = 10.dp, start = 10.dp, end = 10.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.onPrimary
+        ),
+        onClick = onNextButtonClicked
+    ) {
+        BarChart(
+            data = data,
+            max_value = max_value
+        )
+    }
+}
+
+@Composable
+fun BarChart(
+    data: MutableMap<String, Float>,
+    max_value: Int
+) {
+    val context = LocalContext.current
+
+    Column(
+        modifier = Modifier
+            .padding(20.dp)
+            .fillMaxSize()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.Start
+        ) {
+
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(50.dp),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+
+                // scale
+                Column(
+                    modifier = Modifier.fillMaxHeight(),
+                    verticalArrangement = Arrangement.Bottom
+                ) {
+                    Text(text = max_value.toString())
+                    Spacer(modifier = Modifier.fillMaxHeight())
+                }
+
+                Column(
+                    modifier = Modifier.fillMaxHeight(),
+                    verticalArrangement = Arrangement.Bottom
+                ) {
+                    Text(text = (max_value / 2).toString())
+                    Spacer(modifier = Modifier.fillMaxHeight(0.5f))
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(2.dp)
+                    .background(Color.Black)
+            )
+
+            // graph
+            data.values.forEach {
+                Box(
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .width(12.dp)
+                        .fillMaxHeight(it / max_value)
+                        .background(MaterialTheme.colorScheme.primary)
+                        .clickable {
+                            Toast
+                                .makeText(
+                                    context,
+                                    it.toString(),
+                                    Toast.LENGTH_SHORT
+                                )
+                                .show()
+                        }
+                )
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(2.dp)
+                .background(Color.Black)
+        )
+
+        Row(
+            modifier = Modifier
+                .padding(start = 64.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            data.keys.forEach {
+                Text(
+                    modifier = Modifier.width(12.dp),
+                    text = it.substring(0, 1),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+
     }
 }

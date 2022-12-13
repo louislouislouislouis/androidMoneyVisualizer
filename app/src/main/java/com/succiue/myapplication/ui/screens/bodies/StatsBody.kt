@@ -82,18 +82,8 @@ fun StatsBody(
                     GraphSection(onNextButtonClicked = {}, listTransaction = listTransaction)
                 }
                 item {
-                    GraphSection(onNextButtonClicked = {}, listTransaction = listTransaction)
+                    BarPieSection(onNextButtonClicked = {}, listTransaction = listTransaction)
                 }
-                item {
-                    GraphSection(onNextButtonClicked = {}, listTransaction = listTransaction)
-                }
-                item {
-                    GraphSection(onNextButtonClicked = {}, listTransaction = listTransaction)
-                }
-                item {
-                    GraphSection(onNextButtonClicked = {}, listTransaction = listTransaction)
-                }
-
             }
         }
         PullRefreshIndicator(refreshing, state, Modifier.align(Alignment.TopCenter))

@@ -3,13 +3,19 @@ package com.succiue.myapplication.utils
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.succiue.myapplication.R
 import com.succiue.myapplication.data.model.KichtaUserModel
+import com.succiue.myapplication.ui.viewmodels.TransactionUiState
 import org.json.JSONObject
 import java.io.Serializable
+import java.util.*
+import kotlin.math.roundToInt
 
 
 fun <T : Serializable?> Intent.getSerializable(key: String, m_class: Class<T>): T {
@@ -83,6 +89,100 @@ fun sendRequest(
     // below line is to make
     // a json object request.
     queue.add(jsonObjectRequest)
+}
+
+@Composable
+fun getSpendingByMonth(
+    listTransaction: List<TransactionUiState>,
+    data: MutableMap<String, Float>
+) {
+    listTransaction.forEach {
+        var amount = it.amount.substring(
+            0,
+            it.amount.length - 1
+        ).toFloat()
+
+        var date = it.date.split('/')
+
+        if (amount < 0.0f && date[2] == Calendar.getInstance().get(Calendar.YEAR).toString()) {
+            when (date[1]) {
+                "01" -> data.put(
+                    stringResource(R.string.January),
+                    ((data.getValue(stringResource(R.string.January)) - amount) * 100.0f).roundToInt() / 100.0f
+                )
+                "02" -> data.put(
+                    stringResource(R.string.February),
+                    ((data.getValue(stringResource(R.string.February)) - amount) * 100.0f).roundToInt() / 100.0f
+                )
+                "03" -> data.put(
+                    stringResource(R.string.March),
+                    ((data.getValue(stringResource(R.string.March)) - amount) * 100.0f).roundToInt() / 100.0f
+                )
+                "04" -> data.put(
+                    stringResource(R.string.April),
+                    ((data.getValue(stringResource(R.string.April)) - amount) * 100.0f).roundToInt() / 100.0f
+                )
+                "05" -> data.put(
+                    stringResource(R.string.May),
+                    ((data.getValue(stringResource(R.string.May)) - amount) * 100.0f).roundToInt() / 100.0f
+                )
+                "06" -> data.put(
+                    stringResource(R.string.June),
+                    ((data.getValue(stringResource(R.string.June)) - amount) * 100.0f).roundToInt() / 100.0f
+                )
+                "07" -> data.put(
+                    stringResource(R.string.July),
+                    ((data.getValue(stringResource(R.string.July)) - amount) * 100.0f).roundToInt() / 100.0f
+                )
+                "08" -> data.put(
+                    stringResource(R.string.August),
+                    ((data.getValue(stringResource(R.string.August)) - amount) * 100.0f).roundToInt() / 100.0f
+                )
+                "09" -> data.put(
+                    stringResource(R.string.September),
+                    ((data.getValue(stringResource(R.string.September)) - amount) * 100.0f).roundToInt() / 100.0f
+                )
+                "10" -> data.put(
+                    stringResource(R.string.October),
+                    ((data.getValue(stringResource(R.string.October)) - amount) * 100.0f).roundToInt() / 100.0f
+                )
+                "11" -> data.put(
+                    stringResource(R.string.November),
+                    ((data.getValue(stringResource(R.string.November)) - amount) * 100.0f).roundToInt() / 100.0f
+                )
+                "12" -> data.put(
+                    stringResource(R.string.December),
+                    ((data.getValue(stringResource(R.string.December)) - amount) * 100.0f).roundToInt() / 100.0f
+                )
+                else -> print("error date format")
+            }
+        }
+
+    }
+}
+
+fun getMaxValue(
+    maxValue: Float
+): Int {
+    if (maxValue < 250) {
+        return 250;
+    } else if (maxValue < 500) {
+        return 500
+    } else if (maxValue < 1000) {
+        return 1000
+    } else if (maxValue < 2000) {
+        return 2000
+    } else if (maxValue < 5000) {
+        return 5000
+    } else if (maxValue < 10000) {
+        return 10000
+    } else if (maxValue < 20000) {
+        return 20000
+    } else if (maxValue < 50000) {
+        return 50000
+    } else if (maxValue < 100000) {
+        return 100000
+    } else return 25000
 }
 
 object Constant {
