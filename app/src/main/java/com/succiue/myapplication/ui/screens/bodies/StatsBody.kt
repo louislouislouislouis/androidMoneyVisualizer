@@ -70,7 +70,7 @@ fun StatsBody(
                     }
                 }
                 item {
-                    GraphSection(
+                    BarPieSection(
                         listTransaction = listTransaction,
                         onNextButtonClicked = {}
                     )

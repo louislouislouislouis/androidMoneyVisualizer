@@ -26,6 +26,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.succiue.myapplication.R
 import com.succiue.myapplication.ui.viewmodels.TransactionUiState
+import com.succiue.myapplication.utils.getMaxValue
+import com.succiue.myapplication.utils.getSpendingByMonth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -64,10 +66,10 @@ fun HomeBody(
                     TotalSection(totalAmount, currency, onNextClick1)
                 }
                 item {
-                    GraphSection(
+                    /*GraphSection(
                         listTransaction = listTransaction,
                         onNextClick2
-                    )
+                    )*/
                 }
                 item {
                     ListSection(
@@ -151,7 +153,7 @@ fun TotalSection(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GraphSection(
+fun BarPieSection(
     listTransaction: List<TransactionUiState>,
     onNextButtonClicked: () -> Unit
 ) {
@@ -170,25 +172,8 @@ fun GraphSection(
         stringResource(R.string.December) to 0.0f,
     )
 
-    var max_value = 0.0f
-    var new_value = 0.0f
-
-    listTransaction.forEach {
-        if (it.date.substring(3, 5) == "01") {
-            new_value = data.getValue(stringResource(R.string.january)) - it.amount.substring(
-                0,
-                it.amount.length - 1
-            ).toFloat()
-            data.put(
-                stringResource(R.string.january),
-                new_value
-            )
-        }
-
-        if (new_value > max_value) {
-            max_value = new_value
-        }
-    }
+    getSpendingByMonth(listTransaction, data)
+    var max_value = getMaxValue(data.maxOf { it.value })
 
     val context = LocalContext.current
     ElevatedCard(
@@ -203,7 +188,7 @@ fun GraphSection(
     ) {
         BarChart(
             data = data,
-            max_value = max_value.toInt()
+            max_value = max_value
         )
     }
 }
@@ -291,13 +276,13 @@ fun BarChart(
                         .padding(start = 12.dp)
                         .clip(RoundedCornerShape(10.dp))
                         .width(12.dp)
-                        .fillMaxHeight(it)
+                        .fillMaxHeight(it / max_value)
                         .background(MaterialTheme.colorScheme.primary)
                         .clickable {
                             Toast
                                 .makeText(
                                     context,
-                                    (it * max_value).toString(),
+                                    it.toString(),
                                     Toast.LENGTH_SHORT
                                 )
                                 .show()
